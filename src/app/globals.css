@@ -120,3 +120,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+@utility container {
+  @apply px-4 max-w-screen-2xl mx-auto;
+}
