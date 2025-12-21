@@ -13,12 +13,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Product, Variant } from "@/lib/data";
+import { useCart } from "@/lib/cart-context";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { addItem } = useCart();
   const [selectedVariant, setSelectedVariant] = useState<Variant>(
     product.variants[0],
   );
@@ -83,7 +85,10 @@ export function ProductCard({ product }: ProductCardProps) {
       </CardContent>
 
       <CardFooter>
-        <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
+        <Button
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold"
+          onClick={() => addItem(product, selectedVariant)}
+        >
           Add to Cart
         </Button>
       </CardFooter>

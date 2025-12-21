@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
+import { CartSheet } from "@/components/layout/cart-sheet";
+
+import { Badge } from "@/components/ui/badge";
+import { NavbarCart } from "./navbar-cart";
 
 export function Navbar() {
   return (
@@ -40,10 +44,7 @@ export function Navbar() {
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="relative">
-            <ShoppingCart className="h-5 w-5" />
-            <span className="sr-only">Cart</span>
-          </Button>
+          <NavbarCart />
           <Link href="/services">
             <Button className="hidden sm:inline-flex bg-primary text-primary-foreground hover:bg-primary/90">
               Hire For Prototyping

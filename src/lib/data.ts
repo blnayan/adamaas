@@ -1,7 +1,6 @@
 export type Variant = "Electronics Only" | "Frame Only" | "BNF" | "RTF";
 
 export interface Product {
-    stripeProductId?: string;
     id: string;
     name: string;
     slug: string;
@@ -22,7 +21,6 @@ export interface ServiceTier {
 
 export const PRODUCTS: Product[] = [
     {
-        stripeProductId: "prod_TdqEWeOeCRN1Uk",
         id: "reaper",
         name: "Reaper",
         slug: "reaper",
@@ -34,7 +32,6 @@ export const PRODUCTS: Product[] = [
         image: "/images/reaper.jpg"
     },
     {
-        stripeProductId: "prod_Tdvvkhzp9Kcp6J",
         id: "nomad",
         name: "Nomad",
         slug: "nomad",
@@ -46,7 +43,6 @@ export const PRODUCTS: Product[] = [
         image: "/images/nomad.jpg"
     },
     {
-        stripeProductId: "prod_Tdvwye9BV2pbI5",
         id: "nexus",
         name: "Nexus",
         slug: "nexus",

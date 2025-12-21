@@ -30,9 +30,12 @@ export function FeaturedCarousel() {
           </Link>
         </div>
 
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-6 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 -mx-4 px-4 md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {featuredProducts.map((product) => (
-            <div key={product.id} className="flex-1">
+            <div
+              key={product.id}
+              className="min-w-[85vw] md:min-w-0 md:flex-1 snap-center"
+            >
               <Link href={`/shop/${product.slug}`}>
                 <Card className="h-full border-border bg-card hover:border-primary/50 transition-colors duration-300 overflow-hidden group">
                   <CardContent className="px-6 flex flex-col h-full gap-6">

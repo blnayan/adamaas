@@ -11,12 +11,14 @@ import {
 } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { useCart } from "@/lib/cart-context";
 
 interface StickyBuyBarProps {
   product: Product;
 }
 
 export function StickyBuyBar({ product }: StickyBuyBarProps) {
+  const { addItem } = useCart();
   const [isVisible, setIsVisible] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<Variant>(
     product.variants[0],
@@ -79,6 +81,7 @@ export function StickyBuyBar({ product }: StickyBuyBarProps) {
           <Button
             size="lg"
             className="h-10 rounded-full px-6 bg-primary text-primary-foreground hover:bg-primary/90 font-bold shrink-0 text-sm"
+            onClick={() => addItem(product, selectedVariant)}
           >
             Add to Cart
           </Button>
