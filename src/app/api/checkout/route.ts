@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { CartItem } from "@/lib/cart-context";
+import { generateOrderId } from "@/lib/utils";
 
 // Ensure STRIPE_SECRET_KEY is set in .env
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -26,6 +27,8 @@ export async function POST(req: Request) {
       quantity: item.quantity,
     }));
 
+    const orderId = generateOrderId();
+
     const session = await stripe.checkout.sessions.create({
       billing_address_collection: "required",
       shipping_address_collection: {
@@ -34,6 +37,9 @@ export async function POST(req: Request) {
       payment_method_types: ["card"],
       line_items,
       mode: "payment",
+      metadata: {
+        orderId,
+      },
       success_url: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/shop`,
     });

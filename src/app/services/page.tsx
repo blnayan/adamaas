@@ -12,7 +12,7 @@ import { Check } from "lucide-react";
 
 export default function ServicesPage() {
   return (
-    <div className="min-h-screen bg-background py-20 px-4">
+    <div className="bg-background py-20 px-4">
       <div className="container max-w-4xl mx-auto text-center space-y-6 mb-16">
         <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-foreground">
           Prototype Development for{" "}

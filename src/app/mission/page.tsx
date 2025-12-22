@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function MissionPage() {
   return (
-    <div className="min-h-screen bg-background py-20 px-4">
+    <div className="bg-background py-20 px-4">
       <div className="container max-w-3xl mx-auto space-y-12">
         <div className="text-center space-y-6">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tighter">
