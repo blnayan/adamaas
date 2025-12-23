@@ -37,8 +37,11 @@ export async function POST(req: Request) {
       payment_method_types: ["card"],
       line_items,
       mode: "payment",
-      metadata: {
-        orderId,
+      // order id is stored in payment intent metadata so that it is available in the stripe transaction details
+      payment_intent_data: {
+        metadata: {
+          orderId,
+        },
       },
       success_url: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/shop`,

@@ -14,13 +14,14 @@ export async function Receipt({ sessionId }: ReceiptProps) {
 
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ["line_items"],
+      expand: ["line_items", "payment_intent"],
     });
 
-    const amount_total = session.amount_total ?? 0;
-    const line_items = session.line_items?.data ?? [];
+    const amountTotal = session.amount_total ?? 0;
+    const lineItems = session.line_items?.data ?? [];
 
-    const orderId = session.metadata?.orderId;
+    const paymentIntent = session.payment_intent as Stripe.PaymentIntent | null;
+    const orderId = paymentIntent?.metadata?.orderId;
 
     if (!orderId) {
       return null;
@@ -41,7 +42,7 @@ export async function Receipt({ sessionId }: ReceiptProps) {
               <span>Order Summary</span>
             </div>
             <div className="space-y-4">
-              {line_items.map((item) => (
+              {lineItems.map((item) => (
                 <div
                   key={item.id}
                   className="flex justify-between items-start text-sm"
@@ -61,7 +62,7 @@ export async function Receipt({ sessionId }: ReceiptProps) {
               ))}
               <div className="border-t border-border pt-4 flex justify-between items-center font-bold text-lg">
                 <span>Total Paid</span>
-                <span>${(amount_total / 100).toFixed(2)}</span>
+                <span>${(amountTotal / 100).toFixed(2)}</span>
               </div>
             </div>
           </CardContent>
