@@ -39,7 +39,7 @@ export default function ShopPage() {
                 <Link href={`/shop/${bundle.slug}`}>
                   <Button
                     size="lg"
-                    className="w-full sm:w-auto text-lg h-14 px-8 bg-primary text-primary-foreground hover:bg-primary/90"
+                    className="w-full sm:w-auto text-lg font-semibold h-14 px-8 bg-primary text-primary-foreground hover:bg-primary/90"
                   >
                     Buy Ecosystem Bundle - ${bundle.basePrice}
                   </Button>

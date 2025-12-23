@@ -25,7 +25,7 @@ export function Hero() {
           <Link href="/shop">
             <Button
               size="lg"
-              className="w-full sm:w-auto text-lg h-14 px-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-none"
+              className="w-full sm:w-auto font-semibold text-lg h-14 px-8 bg-primary text-primary-foreground hover:bg-primary/90"
             >
               SHOP PRODUCTS
             </Button>
@@ -34,7 +34,7 @@ export function Hero() {
             <Button
               size="lg"
               variant="outline"
-              className="w-full sm:w-auto text-lg h-14 px-8 bg-transparent border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-none"
+              className="w-full sm:w-auto font-semibold text-lg h-14 px-8 bg-transparent border-primary text-primary hover:bg-primary hover:text-primary-foreground"
             >
               HIRE FOR PROTOTYPING
             </Button>
