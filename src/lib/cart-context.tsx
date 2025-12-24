@@ -13,13 +13,13 @@ import { toast } from "sonner";
 export interface CartItem {
   id: string; // Unique ID (product.slug + variant)
   product: Product;
-  variant: Variant;
+  variant?: Variant;
   quantity: number;
 }
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (product: Product, variant: Variant) => void;
+  addItem: (product: Product, variant?: Variant) => void;
   removeItem: (itemId: string) => void;
   clearCart: () => void;
   itemCount: number;
@@ -53,10 +53,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [items, isMounted]);
 
   const addItem = useCallback(
-    (product: Product, variant: Variant) => {
+    (product: Product, variant?: Variant) => {
       if (!isMounted) return; // ensures this function is only called after the component is mounted to prevent race conditions
       setItems((prev) => {
-        const itemId = `${product.slug}-${variant}`;
+        const itemId = variant
+          ? `${product.slug}-${variant.name}`
+          : product.slug;
         const existing = prev.find((item) => item.id === itemId);
 
         if (existing) {

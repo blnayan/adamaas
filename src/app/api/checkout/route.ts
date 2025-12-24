@@ -18,11 +18,15 @@ export async function POST(req: Request) {
       price_data: {
         currency: "usd",
         product_data: {
-          name: `${item.product.name} (${item.variant})`,
+          name: item.variant
+            ? `${item.product.name} (${item.variant.name})`
+            : item.product.name,
           description: item.product.tagline,
           // images: [item.product.image], // Add real images later
         },
-        unit_amount: Math.round(item.product.basePrice * 100), // Stripe expects cents
+        unit_amount: Math.round(
+          (item.variant?.price ?? item.product.basePrice) * 100,
+        ), // Stripe expects cents
       },
       quantity: item.quantity,
     }));

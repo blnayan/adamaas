@@ -1,4 +1,7 @@
-export type Variant = "Electronics Only" | "Frame Only" | "BNF" | "RTF";
+export interface Variant {
+    name: string;
+    price: number;
+}
 
 export interface Product {
     id: string;
@@ -8,7 +11,7 @@ export interface Product {
     basePrice: number;
     description: string;
     badges: string[];
-    variants: Variant[];
+    variants?: Variant[];
     image: string; // Placeholder or path
 }
 
@@ -28,7 +31,12 @@ export const PRODUCTS: Product[] = [
         basePrice: 89,
         description: "Built for speed and durability. The Reaper is a competition-grade frame designed to win.",
         badges: ["Open Source", "Sub-250g"],
-        variants: ["Frame Only", "Electronics Only", "BNF", "RTF"],
+        variants: [
+            { name: "Frame Only", price: 89 },
+            { name: "Electronics Only", price: 299 },
+            { name: "BNF", price: 389 },
+            { name: "RTF", price: 549 }
+        ],
         image: "/images/reaper.jpg"
     },
     {
@@ -39,7 +47,11 @@ export const PRODUCTS: Product[] = [
         basePrice: 99,
         description: "Go where no drone has gone before. 30min+ flight time with a robust frame.",
         badges: ["30min+ Flight", "Open Source"],
-        variants: ["Frame Only", "BNF", "RTF"],
+        // variants: [
+        //     { name: "Frame Only", price: 99 },
+        //     { name: "BNF", price: 429 },
+        //     { name: "RTF", price: 599 }
+        // ],
         image: "/images/nomad.jpg"
     },
     {
@@ -50,7 +62,12 @@ export const PRODUCTS: Product[] = [
         basePrice: 120,
         description: "Stable, smooth, and powerful. Designed for carrying cinema cameras.",
         badges: ["Founding Member Edition", "Open Source"],
-        variants: ["Frame Only", "Electronics Only", "BNF", "RTF"],
+        variants: [
+            { name: "Frame Only", price: 120 },
+            { name: "Electronics Only", price: 349 },
+            { name: "BNF", price: 469 },
+            { name: "RTF", price: 699 }
+        ],
         image: "/images/nexus.jpg"
     },
     {
@@ -61,7 +78,6 @@ export const PRODUCTS: Product[] = [
         basePrice: 1200,
         description: "Get all three drones plus exclusive extras.",
         badges: ["Best Value"],
-        variants: ["RTF"],
         image: "/images/bundle.jpg"
     }
 ];

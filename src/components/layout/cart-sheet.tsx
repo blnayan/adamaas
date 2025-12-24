@@ -27,7 +27,8 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const total = items.reduce(
-    (acc, item) => acc + item.product.basePrice * item.quantity,
+    (acc, item) =>
+      acc + (item.variant?.price ?? item.product.basePrice) * item.quantity,
     0,
   );
 
@@ -80,11 +81,13 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                       <span className="font-medium line-clamp-1">
                         {item.product.name}
                       </span>
-                      <span className="text-xs text-muted-foreground">
-                        {item.variant}
-                      </span>
+                      {item.variant && (
+                        <span className="text-xs text-muted-foreground">
+                          {item.variant.name}
+                        </span>
+                      )}
                       <span className="text-sm font-bold text-primary">
-                        ${item.product.basePrice}
+                        ${item.variant?.price ?? item.product.basePrice}
                       </span>
                     </div>
                     <div className="flex flex-col items-end gap-2">

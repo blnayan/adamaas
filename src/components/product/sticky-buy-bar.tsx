@@ -20,8 +20,8 @@ interface StickyBuyBarProps {
 export function StickyBuyBar({ product }: StickyBuyBarProps) {
   const { addItem } = useCart();
   const [isVisible, setIsVisible] = useState(false);
-  const [selectedVariant, setSelectedVariant] = useState<Variant>(
-    product.variants[0],
+  const [selectedVariant, setSelectedVariant] = useState<Variant | undefined>(
+    product.variants?.[0],
   );
 
   useEffect(() => {
@@ -56,25 +56,30 @@ export function StickyBuyBar({ product }: StickyBuyBarProps) {
         </div>
 
         <div className="flex items-center gap-2 w-full md:w-auto ml-auto">
-          <Select
-            value={selectedVariant}
-            onValueChange={(val) => setSelectedVariant(val as Variant)}
-          >
-            <SelectTrigger className="w-full md:w-[180px] h-10 rounded-full bg-muted/50 border-transparent focus:ring-0 focus:ring-offset-0 text-xs md:text-sm">
-              <SelectValue placeholder="Select variant" />
-            </SelectTrigger>
-            <SelectContent>
-              {product.variants.map((variant) => (
-                <SelectItem key={variant} value={variant}>
-                  {variant}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {product.variants && product.variants.length > 0 ? (
+            <Select
+              value={selectedVariant?.name}
+              onValueChange={(val) => {
+                const variant = product.variants?.find((v) => v.name === val);
+                if (variant) setSelectedVariant(variant);
+              }}
+            >
+              <SelectTrigger className="w-full md:w-[180px] h-10 rounded-full bg-muted/50 border-transparent focus:ring-0 focus:ring-offset-0 text-xs md:text-sm">
+                <SelectValue placeholder="Select variant" />
+              </SelectTrigger>
+              <SelectContent>
+                {product.variants.map((variant) => (
+                  <SelectItem key={variant.name} value={variant.name}>
+                    {variant.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : null}
 
           <div className="hidden sm:block mx-2">
             <span className="font-bold text-sm text-foreground">
-              ${product.basePrice}
+              ${selectedVariant?.price ?? product.basePrice}
             </span>
           </div>
 

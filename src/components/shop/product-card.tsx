@@ -21,8 +21,8 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart();
-  const [selectedVariant, setSelectedVariant] = useState<Variant>(
-    product.variants[0],
+  const [selectedVariant, setSelectedVariant] = useState<Variant | undefined>(
+    product.variants?.[0],
   );
 
   return (
@@ -58,7 +58,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <h3 className="text-xl font-bold">{product.name}</h3>
           </Link>
           <span className="text-lg font-bold text-primary">
-            ${product.basePrice}
+            ${selectedVariant?.price ?? product.basePrice}
           </span>
         </div>
         <p className="text-sm text-muted-foreground line-clamp-2">
@@ -66,21 +66,26 @@ export function ProductCard({ product }: ProductCardProps) {
         </p>
 
         <div className="mt-auto pt-4">
-          <Select
-            value={selectedVariant}
-            onValueChange={(val) => setSelectedVariant(val as Variant)}
-          >
-            <SelectTrigger className="w-full bg-input border-input">
-              <SelectValue placeholder="Select variant" />
-            </SelectTrigger>
-            <SelectContent>
-              {product.variants.map((variant) => (
-                <SelectItem key={variant} value={variant}>
-                  {variant}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {product.variants && product.variants.length > 0 ? (
+            <Select
+              value={selectedVariant?.name}
+              onValueChange={(val) => {
+                const variant = product.variants?.find((v) => v.name === val);
+                if (variant) setSelectedVariant(variant);
+              }}
+            >
+              <SelectTrigger className="w-full bg-input border-input">
+                <SelectValue placeholder="Select variant" />
+              </SelectTrigger>
+              <SelectContent>
+                {product.variants.map((variant) => (
+                  <SelectItem key={variant.name} value={variant.name}>
+                    {variant.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : null}
         </div>
       </CardContent>
 
