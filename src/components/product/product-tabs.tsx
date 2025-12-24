@@ -79,47 +79,27 @@ export function ProductTabs({ product }: ProductTabsProps) {
             </Card>
           </div>
 
-          <div className="mt-12">
-            <h3 className="text-2xl font-bold mb-6 text-center">
-              Pricing Options
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {[
-                {
-                  tier: "Open-Source Files",
-                  price: "FREE",
-                  desc: "STL + STEP + BOM",
-                },
-                {
-                  tier: "Frame Pack",
-                  price: "$89–99",
-                  desc: "Printed PETG + TPU",
-                },
-                {
-                  tier: "Electronics Kit",
-                  price: "$179–249",
-                  desc: "SpeedyBee + motors + VTX",
-                },
-                {
-                  tier: "Full BNF",
-                  price: "$349–449",
-                  desc: "Bind-N-Fly (add RX/batts)",
-                },
-              ].map((tier, i) => (
-                <Card key={i} className="bg-card border-border text-center">
-                  <CardContent className="p-6 flex flex-col items-center justify-center h-full">
-                    <div className="font-bold text-lg mb-2">{tier.tier}</div>
-                    <div className="text-3xl font-bold text-primary mb-2">
-                      {tier.price}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {tier.desc}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+          {product.variants && product.variants.length > 0 && (
+            <div className="mt-12">
+              <h3 className="text-2xl font-bold mb-6 text-center">
+                Pricing Options
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {product.variants.map((variant, i) => (
+                  <Card key={i} className="bg-card border-border text-center">
+                    <CardContent className="p-6 flex flex-col items-center justify-center h-full">
+                      <div className="font-bold text-lg mb-2">
+                        {variant.name}
+                      </div>
+                      <div className="text-3xl font-bold text-primary mb-2">
+                        ${variant.price}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </TabsContent>
 
         <TabsContent value="gallery" className="mt-8">

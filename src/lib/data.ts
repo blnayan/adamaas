@@ -47,11 +47,11 @@ export const PRODUCTS: Product[] = [
         basePrice: 99,
         description: "Go where no drone has gone before. 30min+ flight time with a robust frame.",
         badges: ["30min+ Flight", "Open Source"],
-        // variants: [
-        //     { name: "Frame Only", price: 99 },
-        //     { name: "BNF", price: 429 },
-        //     { name: "RTF", price: 599 }
-        // ],
+        variants: [
+            { name: "Frame Only", price: 99 },
+            { name: "BNF", price: 429 },
+            { name: "RTF", price: 599 }
+        ],
         image: "/images/nomad.jpg"
     },
     {
