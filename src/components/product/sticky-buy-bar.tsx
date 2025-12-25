@@ -1,6 +1,6 @@
 "use client";
 
-import { Product, Variant } from "@/lib/data";
+import { Product } from "@/payload-types";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { useCart } from "@/lib/cart-context";
+import { useCart, Variant } from "@/lib/cart-context";
 
 interface StickyBuyBarProps {
   product: Product;
@@ -69,7 +69,7 @@ export function StickyBuyBar({ product }: StickyBuyBarProps) {
               </SelectTrigger>
               <SelectContent>
                 {product.variants.map((variant) => (
-                  <SelectItem key={variant.name} value={variant.name}>
+                  <SelectItem key={variant.id} value={variant.name}>
                     {variant.name}
                   </SelectItem>
                 ))}

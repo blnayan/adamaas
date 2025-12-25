@@ -1,6 +1,6 @@
 "use client";
 
-import { Product } from "@/lib/data";
+import { Product } from "@/payload-types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import {

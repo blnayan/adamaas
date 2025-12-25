@@ -1,4 +1,4 @@
-import { Product } from "@/lib/data";
+import { Product } from "@/payload-types";
 
 interface ProductHeroProps {
   product: Product;
@@ -13,7 +13,7 @@ export function ProductHero({ product }: ProductHeroProps) {
           CINEMATIC
         </span>
       </div>
-      <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-t from-background to-transparent" />
 
       <div className="relative z-10 text-center space-y-4 max-w-4xl px-4">
         <h1 className="text-6xl md:text-8xl font-bold tracking-tighter text-foreground">
