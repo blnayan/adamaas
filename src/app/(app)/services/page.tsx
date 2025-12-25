@@ -27,7 +27,7 @@ export default function ServicesPage() {
         </div>
       </div>
 
-      <div className="container max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+      <div className="container max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
         {SERVICES.map((service, i) => (
           <Card
             key={i}
