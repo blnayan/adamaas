@@ -15,6 +15,16 @@ export const Products: CollectionConfig = {
       required: true,
     },
     {
+      name: 'type',
+      type: 'select',
+      options: [
+        { label: 'Product', value: 'product' },
+        { label: 'Bundle', value: 'bundle' },
+      ],
+      defaultValue: 'product',
+      required: true,
+    },
+    {
       name: 'slug',
       type: 'text',
       required: true,

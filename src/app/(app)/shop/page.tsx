@@ -6,8 +6,8 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 export default function ShopPage() {
-  const bundle = PRODUCTS.find((p) => p.id === "bundle");
-  const otherProducts = PRODUCTS.filter((p) => p.id !== "bundle");
+  const bundle = PRODUCTS.find((p) => p.type === "bundle");
+  const otherProducts = PRODUCTS.filter((p) => p.type === "product");
 
   return (
     <div className="min-h-screen bg-background">

@@ -5,6 +5,7 @@ export interface Variant {
 
 export interface Product {
     id: string;
+    type: "product" | "bundle";
     name: string;
     slug: string;
     tagline: string;
@@ -25,6 +26,7 @@ export interface ServiceTier {
 export const PRODUCTS: Product[] = [
     {
         id: "reaper",
+        type: "product",
         name: "Reaper",
         slug: "reaper",
         tagline: "The Ultimate FPV Racer",
@@ -41,6 +43,7 @@ export const PRODUCTS: Product[] = [
     },
     {
         id: "nomad",
+        type: "product",
         name: "Nomad",
         slug: "nomad",
         tagline: "Long Range Explorer",
@@ -56,6 +59,7 @@ export const PRODUCTS: Product[] = [
     },
     {
         id: "nexus",
+        type: "product",
         name: "Nexus",
         slug: "nexus",
         tagline: "Cinematic Powerhouse",
@@ -72,6 +76,7 @@ export const PRODUCTS: Product[] = [
     },
     {
         id: "bundle",
+        type: "bundle",
         name: "Full Ecosystem Bundle",
         slug: "bundle",
         tagline: "Everything You Need",

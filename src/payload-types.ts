@@ -89,8 +89,12 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'product-hero': ProductHero;
+  };
+  globalsSelect: {
+    'product-hero': ProductHeroSelect<false> | ProductHeroSelect<true>;
+  };
   locale: null;
   user: User & {
     collection: 'users';
@@ -168,6 +172,7 @@ export interface Media {
 export interface Product {
   id: number;
   name: string;
+  type: 'product' | 'bundle';
   slug: string;
   tagline: string;
   basePrice: number;
@@ -313,6 +318,7 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface ProductsSelect<T extends boolean = true> {
   name?: T;
+  type?: T;
   slug?: T;
   tagline?: T;
   basePrice?: T;
@@ -373,6 +379,26 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-hero".
+ */
+export interface ProductHero {
+  id: number;
+  featuredProduct: number | Product;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-hero_select".
+ */
+export interface ProductHeroSelect<T extends boolean = true> {
+  featuredProduct?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
