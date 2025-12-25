@@ -12,8 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Product, Variant } from "@/lib/data";
-import { useCart } from "@/lib/cart-context";
+import { Product } from "@/payload-types";
+import { useCart, Variant } from "@/lib/cart-context";
 
 interface ProductCardProps {
   product: Product;
@@ -36,13 +36,13 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
           </Link>
           <div className="absolute top-2 left-2 flex flex-col gap-2">
-            {product.badges.map((badge) => (
+            {product.badges?.map((badge) => (
               <Badge
-                key={badge}
+                key={badge.id}
                 variant="secondary"
                 className="w-fit bg-background/80 backdrop-blur text-foreground border border-border"
               >
-                {badge}
+                {badge.text}
               </Badge>
             ))}
           </div>
@@ -79,7 +79,7 @@ export function ProductCard({ product }: ProductCardProps) {
               </SelectTrigger>
               <SelectContent>
                 {product.variants.map((variant) => (
-                  <SelectItem key={variant.name} value={variant.name}>
+                  <SelectItem key={variant.id} value={variant.name}>
                     {variant.name}
                   </SelectItem>
                 ))}

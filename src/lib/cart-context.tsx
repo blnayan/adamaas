@@ -7,8 +7,10 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { Product, Variant } from "@/lib/data";
+import { Product } from "@/payload-types";
 import { toast } from "sonner";
+
+export type Variant = NonNullable<Product["variants"]>[number];
 
 export interface CartItem {
   id: string; // Unique ID (product.slug + variant)

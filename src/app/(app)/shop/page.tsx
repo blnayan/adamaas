@@ -1,13 +1,59 @@
-import { PRODUCTS } from "@/lib/data";
 import { ProductCard } from "@/components/shop/product-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { getPayload } from "payload";
+import config from "@payload-config";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
-export default function ShopPage() {
-  const bundle = PRODUCTS.find((p) => p.type === "bundle");
-  const otherProducts = PRODUCTS.filter((p) => p.type === "product");
+export default async function ShopPage(props: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const searchParams = await props.searchParams;
+  const page = Number(searchParams.page) || 1;
+  const limit = 9;
+
+  const payload = await getPayload({ config });
+
+  // Fetch bundle separately
+  const { docs: bundles } = await payload.find({
+    collection: "products",
+    where: {
+      type: {
+        equals: "bundle",
+      },
+    },
+    limit: 1,
+  });
+  const bundle = bundles[0];
+
+  // Fetch individual products
+  const productsData = await payload.find({
+    collection: "products",
+    where: {
+      type: {
+        equals: "product",
+      },
+    },
+    limit,
+    page,
+    sort: "-createdAt",
+  });
+
+  const {
+    docs: otherProducts,
+    totalPages,
+    hasNextPage,
+    hasPrevPage,
+  } = productsData;
 
   return (
     <div className="min-h-screen bg-background">
@@ -55,11 +101,52 @@ export default function ShopPage() {
         <h2 className="text-3xl font-bold mb-10 text-foreground">
           Individual Platforms
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {otherProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+
+        {otherProducts.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-lg text-muted-foreground">
+              No products available at the moment.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {otherProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Pagination>
+                <PaginationContent>
+                  {hasPrevPage && (
+                    <PaginationItem>
+                      <PaginationPrevious href={`/shop?page=${page - 1}`} />
+                    </PaginationItem>
+                  )}
+
+                  {Array.from({ length: totalPages }).map((_, i) => (
+                    <PaginationItem key={i}>
+                      <PaginationLink
+                        href={`/shop?page=${i + 1}`}
+                        isActive={page === i + 1}
+                      >
+                        {i + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+
+                  {hasNextPage && (
+                    <PaginationItem>
+                      <PaginationNext href={`/shop?page=${page + 1}`} />
+                    </PaginationItem>
+                  )}
+                </PaginationContent>
+              </Pagination>
+            )}
+          </>
+        )}
       </section>
     </div>
   );
