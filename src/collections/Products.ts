@@ -1,4 +1,6 @@
-import type { CollectionConfig } from 'payload'
+import { Product } from '@/payload-types'
+import type { CollectionConfig, CollectionAfterChangeHook } from 'payload'
+import { revalidatePath } from 'next/cache'
 
 export const Products: CollectionConfig = {
   slug: 'products',
@@ -7,6 +9,14 @@ export const Products: CollectionConfig = {
   },
   access: {
     read: () => true,
+  },
+  hooks: {
+    afterChange: [
+      async ({data}) => {
+        revalidatePath('/')
+        revalidatePath(`/shop/${data.slug}`)
+      },
+    ] as CollectionAfterChangeHook<Product>[],
   },
   fields: [
     {
