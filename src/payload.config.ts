@@ -6,11 +6,11 @@ import { buildConfig } from "payload";
 import { fileURLToPath } from "url";
 import sharp from "sharp";
 
-import { Users } from "./collections/Users";
-import { Media } from "./collections/Media";
-import { Products } from "./collections/Products";
+import { Users } from "./payload/collections/Users";
+import { Media } from "./payload/collections/Media";
+import { Products } from "./payload/collections/Products";
 
-import { ProductHero } from "./globals/ProductHero";
+import { ProductHero } from "./payload/globals/ProductHero";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
