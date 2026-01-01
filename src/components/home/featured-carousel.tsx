@@ -74,17 +74,19 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
                         <p className="text-muted-foreground line-clamp-2">
                           {product.tagline}
                         </p>
-                        <div className="flex flex-wrap gap-2 mt-auto">
-                          {product.badges?.map((badge) => (
-                            <Badge
-                              key={badge.id}
-                              variant="secondary"
-                              className="bg-muted text-muted-foreground pointer-events-none"
-                            >
-                              {badge.text}
-                            </Badge>
-                          ))}
-                        </div>
+                        {product.badges && (
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {product.badges?.map((badge) => (
+                              <Badge
+                                key={badge.id}
+                                variant="secondary"
+                                className="bg-muted text-muted-foreground pointer-events-none"
+                              >
+                                {badge.text}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
