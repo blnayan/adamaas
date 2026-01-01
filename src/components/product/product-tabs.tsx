@@ -51,28 +51,30 @@ export function ProductTabs({ product }: ProductTabsProps) {
               </p>
             </div>
             <Card className="bg-card border-border">
-              <CardContent className="p-6">
+              <CardContent className="px-6">
                 <h3 className="text-xl font-bold mb-4">
                   Technical Specifications
                 </h3>
                 <Table>
                   <TableBody>
-                    <TableRow>
-                      <TableCell className="font-medium">Weight</TableCell>
-                      <TableCell>245g</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-medium">Material</TableCell>
-                      <TableCell>Carbon Fiber + PETG</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-medium">Motor Mount</TableCell>
-                      <TableCell>12x12 M2</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-medium">Stack</TableCell>
-                      <TableCell>20x20 / 25.5x25.5</TableCell>
-                    </TableRow>
+                    {product.techSpecs?.map((spec) => (
+                      <TableRow key={spec.id}>
+                        <TableCell className="font-medium">
+                          {spec.label}
+                        </TableCell>
+                        <TableCell>{spec.value}</TableCell>
+                      </TableRow>
+                    ))}
+                    {(!product.techSpecs || product.techSpecs.length === 0) && (
+                      <TableRow>
+                        <TableCell
+                          colSpan={2}
+                          className="text-center text-muted-foreground"
+                        >
+                          No specifications available.
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>

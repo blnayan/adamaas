@@ -1,7 +1,9 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ArrowRight } from "lucide-react";
 import { Product } from "@/payload-types";
 
@@ -35,20 +37,32 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
             No featured products available at the moment.
           </div>
         ) : (
-          <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 -mx-4 px-4 md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3 md:overflow-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {products.map((product) => (
               <div
                 key={product.id}
-                className="min-w-[85vw] md:min-w-0 md:flex-1 snap-center"
+                className="min-w-full md:min-w-0 md:flex-1 snap-center"
               >
                 <Link href={`/shop/${product.slug}`}>
                   <Card className="h-full border-border bg-card hover:border-primary/50 transition-colors duration-300 overflow-hidden group">
                     <CardContent className="px-6 flex flex-col h-full gap-6">
-                      <div className="relative aspect-video bg-muted overflow-hidden rounded-lg">
-                        {/* Placeholder for Product Image */}
-                        <div className="absolute inset-0 flex items-center justify-center text-muted-foreground font-mono text-xs">
-                          {product.name} Preview
-                        </div>
+                      <div className="rounded-lg overflow-hidden bg-muted relative">
+                        <AspectRatio ratio={16 / 9}>
+                          {product.image &&
+                          typeof product.image !== "number" &&
+                          product.image.url ? (
+                            <Image
+                              src={product.image.url}
+                              alt={product.image.alt}
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground font-mono text-xs">
+                              {product.name} Preview
+                            </div>
+                          )}
+                        </AspectRatio>
                       </div>
                       <div className="flex flex-col grow">
                         <div className="flex justify-between items-start mb-2">
@@ -57,7 +71,7 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
                             ${product.basePrice}
                           </span>
                         </div>
-                        <p className="text-muted-foreground mb-4 line-clamp-2">
+                        <p className="text-muted-foreground line-clamp-2">
                           {product.tagline}
                         </p>
                         <div className="flex flex-wrap gap-2 mt-auto">

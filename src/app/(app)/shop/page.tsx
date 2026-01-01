@@ -99,7 +99,7 @@ export default async function ShopPage(props: {
       {/* Product Grid */}
       <section className="py-20 container px-4 md:px-8 max-w-screen-2xl">
         <h2 className="text-3xl font-bold mb-10 text-foreground">
-          Individual Platforms
+          Our Products
         </h2>
 
         {otherProducts.length === 0 ? (

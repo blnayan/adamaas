@@ -190,7 +190,14 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
-  image: number | Media;
+  techSpecs?:
+    | {
+        label: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  image?: (number | null) | Media;
   updatedAt: string;
   createdAt: string;
 }
@@ -334,6 +341,13 @@ export interface ProductsSelect<T extends boolean = true> {
     | {
         name?: T;
         price?: T;
+        id?: T;
+      };
+  techSpecs?:
+    | T
+    | {
+        label?: T;
+        value?: T;
         id?: T;
       };
   image?: T;
