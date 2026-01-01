@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "ci": "payload migrate && bun run build",
     "start": "next start",
     "lint": "eslint"
   },
