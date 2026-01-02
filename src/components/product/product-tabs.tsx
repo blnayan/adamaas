@@ -44,11 +44,6 @@ export function ProductTabs({ product }: ProductTabsProps) {
               <p className="text-lg text-muted-foreground">
                 {product.description}
               </p>
-              <p className="text-muted-foreground">
-                Detailed specs and features regarding the {product.name}{" "}
-                platform would go here. Highlighting the specific engineering
-                decisions made during in-house development.
-              </p>
             </div>
             <Card className="bg-card border-border">
               <CardContent className="px-6">
