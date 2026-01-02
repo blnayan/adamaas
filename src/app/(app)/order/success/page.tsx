@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { SuccessContent } from "@/components/checkout/success-content";
-import { Receipt } from "@/components/checkout/receipt";
+import { SuccessContent } from "@/components/order-success/success-content";
+import { Receipt } from "@/components/order-success/receipt";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
