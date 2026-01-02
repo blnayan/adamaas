@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { getPayload } from "payload";
 import config from "@payload-config";
 
-// Next.js 15+ correct type for params
 type Props = {
   params: Promise<{ slug: string }>;
 };
@@ -43,7 +42,6 @@ export async function generateStaticParams() {
   const payload = await getPayload({ config });
   const { docs: products } = await payload.find({
     collection: "products",
-    limit: 100, // Reasonable limit for SSG
     select: {
       slug: true,
     },
