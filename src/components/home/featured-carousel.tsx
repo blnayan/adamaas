@@ -18,7 +18,7 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
         <div className="flex justify-between items-end mb-10">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
-              Featured Projects
+              Featured Products
             </h2>
             <p className="text-muted-foreground">
               Battle-tested hardware ready for the field.
