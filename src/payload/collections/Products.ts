@@ -14,7 +14,7 @@ export const Products: CollectionConfig = {
     afterChange: [
       async ({data}) => {
         revalidatePath('/')
-        revalidatePath(`/shop/${data.slug}`)
+        revalidatePath(`/product/${data.slug}`)
       },
     ] as CollectionAfterChangeHook<Product>[],
   },

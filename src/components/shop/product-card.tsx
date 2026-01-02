@@ -33,7 +33,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="rounded-lg overflow-hidden bg-muted relative">
           <AspectRatio ratio={16 / 9}>
             <Link
-              href={`/shop/${product.slug}`}
+              href={`/product/${product.slug}`}
               className="block h-full w-full relative"
             >
               {product.image &&

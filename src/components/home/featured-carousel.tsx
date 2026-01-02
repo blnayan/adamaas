@@ -25,7 +25,7 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
             </p>
           </div>
           <Link
-            href="/shop"
+            href="/shop/1"
             className="hidden md:flex items-center text-primary hover:text-primary/90 font-semibold"
           >
             View All <ArrowRight className="ml-2 h-4 w-4" />
@@ -43,7 +43,7 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
                 key={product.id}
                 className="min-w-full md:min-w-0 md:flex-1 snap-center"
               >
-                <Link href={`/shop/${product.slug}`}>
+                <Link href={`/product/${product.slug}`}>
                   <Card className="h-full border-border bg-card hover:border-primary/50 transition-colors duration-300 overflow-hidden group">
                     <CardContent className="px-6 flex flex-col h-full gap-6">
                       <div className="rounded-lg overflow-hidden bg-muted relative">
@@ -97,7 +97,7 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
         )}
 
         <div className="mt-6 md:hidden text-center">
-          <Link href="/shop">
+          <Link href="/shop/1">
             <Button variant="ghost" className="text-primary">
               View All Products <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

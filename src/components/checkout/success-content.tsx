@@ -36,7 +36,7 @@ export function SuccessContent({ children, sessionId }: SuccessContentProps) {
       {children}
 
       <div className="flex gap-4">
-        <Link href="/shop">
+        <Link href="/shop/1">
           <Button
             size="lg"
             className="bg-primary text-primary-foreground hover:bg-primary/90"

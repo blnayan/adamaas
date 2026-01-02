@@ -40,7 +40,7 @@ export default function MissionPage() {
         </div>
 
         <div className="flex justify-center pt-8">
-          <Link href="/shop">
+          <Link href="/shop/1">
             <Button
               size="lg"
               className="bg-primary text-primary-foreground hover:bg-primary/90"

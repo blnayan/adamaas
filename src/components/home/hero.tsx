@@ -22,7 +22,7 @@ export function Hero() {
         </h1>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-          <Link href="/shop">
+          <Link href="/shop/1">
             <Button
               size="lg"
               className="w-full sm:w-auto font-semibold text-lg h-14 px-8 bg-primary text-primary-foreground hover:bg-primary/90"

@@ -5,11 +5,11 @@ import { notFound } from "next/navigation";
 import { getPayload } from "payload";
 import config from "@payload-config";
 
-type Props = {
+type ProductPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export default async function ProductPage({ params }: Props) {
+export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
   const payload = await getPayload({ config });
 
