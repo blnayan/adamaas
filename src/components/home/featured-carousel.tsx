@@ -74,7 +74,7 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
                         <p className="text-muted-foreground line-clamp-2">
                           {product.tagline}
                         </p>
-                        {product.badges && (
+                        {product.badges && product.badges.length > 0 && (
                           <div className="flex flex-wrap gap-2 mt-2">
                             {product.badges?.map((badge) => (
                               <Badge
