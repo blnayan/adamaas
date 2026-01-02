@@ -37,7 +37,10 @@ export async function POST(req: Request) {
       billing_address_collection: "required",
       shipping_address_collection: {
         allowed_countries: ["US", "CA"],
-      },  
+      },
+      automatic_tax: {
+        enabled: true,
+      },
       payment_method_types: ["card"],
       line_items,
       mode: "payment",
