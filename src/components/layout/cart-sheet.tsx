@@ -72,10 +72,20 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                 {items.map((item) => (
                   <div key={item.id} className="flex gap-4">
                     <div className="relative h-20 w-20 rounded-md bg-muted overflow-hidden shrink-0">
-                      {/* Placeholder Item Image */}
-                      <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground">
-                        {item.product.name}
-                      </div>
+                      {item.product.image &&
+                      typeof item.product.image !== "number" &&
+                      item.product.image.url ? (
+                        <Image
+                          src={item.product.image.url}
+                          alt={item.product.image.alt || item.product.name}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground">
+                          {item.product.name}
+                        </div>
+                      )}
                     </div>
                     <div className="flex flex-col flex-1 gap-1">
                       <span className="font-medium line-clamp-1">
