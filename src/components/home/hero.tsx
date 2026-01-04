@@ -15,7 +15,7 @@ export function Hero() {
 
       <div className="relative z-10 container px-4 md:px-6 flex flex-col items-center text-center space-y-8">
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground tracking-tighter max-w-4xl">
-          Adamaas Hardware that works.{" "}
+          ADAMAAS Hardware that works.{" "}
           <span className="block text-primary">
             Built in-house. Shipped fast.
           </span>
