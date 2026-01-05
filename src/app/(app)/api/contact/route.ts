@@ -39,6 +39,9 @@ export async function POST(req: Request) {
       );
     }
 
+    // Turnstile verification successful
+    // TODO: Add email functionality
+
     const validatedData = contactFormSchema.parse(formData);
 
     const payload = await getPayload({ config });
