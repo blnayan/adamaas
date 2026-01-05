@@ -197,9 +197,10 @@ export function ContactForm() {
             />
           </FieldGroup>
         </CardContent>
-        <CardFooter className="flex gap-6">
+        <CardFooter className="flex flex-col gap-6 items-start">
           <Turnstile
             ref={turnstileRef}
+            className="leading-none"
             onSuccess={setToken}
             siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
             options={{
