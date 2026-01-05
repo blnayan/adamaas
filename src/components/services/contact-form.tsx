@@ -197,29 +197,23 @@ export function ContactForm() {
             />
           </FieldGroup>
         </CardContent>
-        <CardFooter>
-          <FieldGroup className="gap-6">
-            <Field>
-              <Turnstile
-                ref={turnstileRef}
-                onSuccess={setToken}
-                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
-                options={{
-                  theme: "auto",
-                  appearance: "interaction-only",
-                }}
-              />
-            </Field>
-            <Field>
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isSubmitting || !token}
-              >
-                {isSubmitting ? "Sending..." : "Send Inquiry"}
-              </Button>
-            </Field>
-          </FieldGroup>
+        <CardFooter className="flex gap-6">
+          <Turnstile
+            ref={turnstileRef}
+            onSuccess={setToken}
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+            options={{
+              theme: "auto",
+              appearance: "always",
+            }}
+          />
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isSubmitting || !token}
+          >
+            {isSubmitting ? "Sending..." : "Send Inquiry"}
+          </Button>
         </CardFooter>
       </Card>
     </form>
