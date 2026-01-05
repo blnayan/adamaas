@@ -25,7 +25,14 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 
+import { Turnstile, TurnstileInstance } from "@marsidev/react-turnstile";
+import { useRef, useState } from "react";
+
 export function ContactForm() {
+  const turnstileRef = useRef<TurnstileInstance>(null);
+  const [token, setToken] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
   const form = useForm({
     defaultValues: {
       customerName: "",
@@ -38,13 +45,20 @@ export function ContactForm() {
       onSubmit: contactFormSchema,
     },
     onSubmit: async ({ value }) => {
+      setIsSubmitting(true);
+
+      if (!token) {
+        toast.error("Please complete the verification check.");
+        return;
+      }
+
       try {
         const response = await fetch("/api/contact", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(value),
+          body: JSON.stringify({ ...value, token }),
         });
 
         if (!response.ok) {
@@ -53,10 +67,14 @@ export function ContactForm() {
 
         toast.success("Message sent! We'll be in touch shortly.");
         form.reset();
+        setToken("");
+        turnstileRef.current?.reset();
       } catch (error) {
         toast.error("Something went wrong. Please try again.");
         console.error(error);
       }
+
+      setIsSubmitting(false);
     },
   });
 
@@ -76,7 +94,7 @@ export function ContactForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <FieldGroup>
+          <FieldGroup className="gap-6">
             <form.Field
               name="customerName"
               children={(field) => (
@@ -180,13 +198,28 @@ export function ContactForm() {
           </FieldGroup>
         </CardContent>
         <CardFooter>
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={form.state.isSubmitting}
-          >
-            {form.state.isSubmitting ? "Sending..." : "Send Inquiry"}
-          </Button>
+          <FieldGroup className="gap-6">
+            <Field>
+              <Turnstile
+                ref={turnstileRef}
+                onSuccess={setToken}
+                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+                options={{
+                  theme: "auto",
+                  appearance: "interaction-only",
+                }}
+              />
+            </Field>
+            <Field>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isSubmitting || !token}
+              >
+                {isSubmitting ? "Sending..." : "Send Inquiry"}
+              </Button>
+            </Field>
+          </FieldGroup>
         </CardFooter>
       </Card>
     </form>

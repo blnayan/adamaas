@@ -11,6 +11,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "^1.4.1",
     "@payloadcms/db-postgres": "^3.69.0",
     "@payloadcms/next": "^3.69.0",
     "@payloadcms/richtext-lexical": "^3.69.0",
