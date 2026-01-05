@@ -11,25 +11,26 @@ export async function POST(req: Request) {
     const { items } = (await req.json()) as { items: CartItem[] };
 
     if (!items || items.length === 0) {
-        return new NextResponse("No items in cart", { status: 400 });
+      return new NextResponse("No items in cart", { status: 400 });
     }
 
-    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map((item) => ({
-      price_data: {
-        currency: "usd",
-        product_data: {
-          name: item.variant
-            ? `${item.product.name} (${item.variant.name})`
-            : item.product.name,
-          description: item.product.tagline,
-          // images: [item.product.image], // Add real images later
+    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] =
+      items.map((item) => ({
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: item.variant
+              ? `${item.product.name} (${item.variant.name})`
+              : item.product.name,
+            description: item.product.tagline,
+            // images: [item.product.image], // Add real images later
+          },
+          unit_amount: Math.round(
+            (item.variant?.price ?? item.product.basePrice) * 100,
+          ), // Stripe expects cents
         },
-        unit_amount: Math.round(
-          (item.variant?.price ?? item.product.basePrice) * 100,
-        ), // Stripe expects cents
-      },
-      quantity: item.quantity,
-    }));
+        quantity: item.quantity,
+      }));
 
     const orderId = generateOrderId();
 
@@ -57,6 +58,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error("[STRIPE_ERROR]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }

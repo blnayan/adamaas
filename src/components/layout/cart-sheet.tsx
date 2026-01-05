@@ -16,6 +16,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 import { loadStripe } from "@stripe/stripe-js";
+import z from "zod";
 
 // Make sure to populate NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in .env
 const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
@@ -43,7 +44,8 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
 
       if (!response.ok) throw new Error("Checkout failed");
 
-      const { url } = await response.json();
+      const url = z.url().parse((await response.json())?.url);
+
       window.location.href = url;
     } catch (error) {
       console.error(error);

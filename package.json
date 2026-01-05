@@ -27,6 +27,7 @@
     "@sapphire/snowflake": "^3.5.5",
     "@stripe/react-stripe-js": "^5.4.1",
     "@stripe/stripe-js": "^8.6.0",
+    "@tanstack/react-form": "^1.27.7",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "graphql": "^16.8.1",
@@ -38,7 +39,8 @@
     "react-dom": "19.2.3",
     "sonner": "^2.0.7",
     "stripe": "^20.1.0",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.4.0",
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",

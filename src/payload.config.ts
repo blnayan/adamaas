@@ -9,6 +9,7 @@ import sharp from "sharp";
 import { Users } from "./payload/collections/Users";
 import { Media } from "./payload/collections/Media";
 import { Products } from "./payload/collections/Products";
+import { Inquiries } from "./payload/collections/Inquiries";
 
 import { ProductHero } from "./payload/globals/ProductHero";
 
@@ -23,7 +24,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Products],
+  collections: [Users, Media, Products, Inquiries],
   globals: [ProductHero],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",

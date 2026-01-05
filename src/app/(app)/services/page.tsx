@@ -1,4 +1,5 @@
 import { SERVICES } from "@/lib/data";
+import { ContactForm } from "@/components/services/contact-form";
 import {
   Card,
   CardContent,
@@ -65,20 +66,49 @@ export default function ServicesPage() {
         ))}
       </div>
 
-      <div className="container max-w-2xl mx-auto text-center bg-card border border-border rounded-xl p-12">
-        <h2 className="text-3xl font-bold mb-4">Ready to build?</h2>
-        <p className="text-muted-foreground mb-8">
-          Schedule a free 30-minute feasibility call. No commitments, just
-          engineering talk.
-        </p>
-        <Link href="#">
-          <Button
-            size="lg"
-            className="bg-foreground text-background hover:bg-foreground/90 font-bold h-14 px-8 text-lg"
-          >
-            Schedule Call
-          </Button>
-        </Link>
+      <div className="container max-w-7xl mx-auto mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          <div className="lg:sticky lg:top-24 space-y-6">
+            <h2 className="text-4xl font-bold tracking-tight">
+              Ready to build?
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              Schedule a free 30-minute feasibility call. No commitments, just
+              engineering talk.
+            </p>
+            <div className="space-y-4 pt-4 border-t border-border">
+              <h3 className="font-semibold text-lg">What happens next?</h3>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs shrink-0">
+                    1
+                  </div>
+                  <p className="text-muted-foreground">
+                    We review your requirements to ensure we're a good fit.
+                  </p>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs shrink-0">
+                    2
+                  </div>
+                  <p className="text-muted-foreground">
+                    We schedule a call to discuss technical feasibility and
+                    scope.
+                  </p>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs shrink-0">
+                    3
+                  </div>
+                  <p className="text-muted-foreground">
+                    You receive a detailed proposal with timeline and pricing.
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <ContactForm />
+        </div>
       </div>
     </div>
   );
