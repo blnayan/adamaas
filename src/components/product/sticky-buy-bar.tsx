@@ -46,7 +46,7 @@ export function StickyBuyBar({ product }: StickyBuyBarProps) {
           : "translate-y-20 opacity-0 pointer-events-none",
       )}
     >
-      <div className="flex items-center justify-between px-2">
+      <div className="flex items-center justify-between">
         <div className="hidden md:flex flex-col ml-4">
           <h3 className="font-bold text-sm leading-tight">{product.name}</h3>
           <p className="text-[10px] text-muted-foreground leading-tight">
@@ -56,39 +56,44 @@ export function StickyBuyBar({ product }: StickyBuyBarProps) {
 
         <div className="flex items-center gap-2 w-full md:w-auto ml-auto">
           {product.variants && product.variants.length > 0 ? (
-            <Select
-              value={selectedVariant?.name}
-              onValueChange={(val) => {
-                const variant = product.variants?.find((v) => v.name === val);
-                if (variant) setSelectedVariant(variant);
-              }}
-            >
-              <SelectTrigger className="w-full md:w-[180px] h-10 rounded-full bg-muted/50 border-transparent focus:ring-0 focus:ring-offset-0 text-xs md:text-sm">
-                <SelectValue placeholder="Select variant" />
-              </SelectTrigger>
-              <SelectContent>
-                {product.variants.map((variant) => (
-                  <SelectItem key={variant.id} value={variant.name}>
-                    {variant.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex-1 min-w-0 overflow-hidden">
+              <Select
+                value={selectedVariant?.name}
+                onValueChange={(val) => {
+                  const variant = product.variants?.find((v) => v.name === val);
+                  if (variant) setSelectedVariant(variant);
+                }}
+              >
+                <SelectTrigger className="w-full md:w-[180px] h-10 rounded-full bg-muted/50 border-transparent focus:ring-0 focus:ring-offset-0 text-xs md:text-sm">
+                  <span className="truncate block w-full text-left">
+                    <SelectValue placeholder="Select variant" />
+                  </span>
+                </SelectTrigger>
+                <SelectContent>
+                  {product.variants.map((variant) => (
+                    <SelectItem key={variant.id} value={variant.name}>
+                      {variant.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           ) : null}
 
-          <div className="hidden sm:block mx-2">
-            <span className="font-bold text-sm text-foreground">
-              ${selectedVariant?.price ?? product.basePrice}
-            </span>
+          <div className="shrink-0 flex justify-between gap-2 items-center">
+            <div className="mx-2">
+              <span className="font-bold text-sm text-foreground">
+                ${selectedVariant?.price ?? product.basePrice}
+              </span>
+            </div>
+            <Button
+              size="lg"
+              className="h-10 rounded-full px-6 bg-primary text-primary-foreground hover:bg-primary/90 font-bold shrink-0 text-sm"
+              onClick={() => addItem(product, selectedVariant)}
+            >
+              Add to Cart
+            </Button>
           </div>
-
-          <Button
-            size="lg"
-            className="h-10 rounded-full px-6 bg-primary text-primary-foreground hover:bg-primary/90 font-bold shrink-0 text-sm"
-            onClick={() => addItem(product, selectedVariant)}
-          >
-            Add to Cart
-          </Button>
         </div>
       </div>
     </div>
