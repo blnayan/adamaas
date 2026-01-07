@@ -26,8 +26,7 @@ export function StickyBuyBar({ product }: StickyBuyBarProps) {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Show bar after scrolling past hero (approx 80vh)
-      if (window.scrollY > window.innerHeight * 0.7) {
+      if (window.scrollY > window.innerHeight * 0.1) {
         setIsVisible(true);
       } else {
         setIsVisible(false);
