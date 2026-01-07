@@ -5,7 +5,10 @@ export const contactFormSchema = z.object({
   projectName: z.string().min(2, "Project name must be at least 2 characters"),
   timeline: z.string().min(1, "Timeline is required"),
   email: z.email("Invalid email address"),
-  description: z.string().min(10, "Please provide more detail (at least 10 characters)"),
+  phone: z.string().regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
+  description: z
+    .string()
+    .min(10, "Please provide more detail (at least 10 characters)"),
 });
 
 export type ContactFormSchema = z.infer<typeof contactFormSchema>;

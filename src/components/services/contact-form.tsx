@@ -39,6 +39,7 @@ export function ContactForm() {
       projectName: "",
       timeline: "",
       email: "",
+      phone: "",
       description: "",
     } as ContactFormSchema,
     validators: {
@@ -128,6 +129,26 @@ export function ContactForm() {
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       placeholder="you@company.com"
+                    />
+                  </FieldContent>
+                  <FieldError errors={field.state.meta.errors} />
+                </Field>
+              )}
+            />
+
+            <form.Field
+              name="phone"
+              children={(field) => (
+                <Field>
+                  <FieldLabel htmlFor={field.name}>Phone</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      placeholder="+1 (555) 000-0000"
                     />
                   </FieldContent>
                   <FieldError errors={field.state.meta.errors} />

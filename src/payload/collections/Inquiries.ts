@@ -1,42 +1,53 @@
-import { CollectionConfig } from 'payload'
+import { CollectionConfig } from "payload";
 
 export const Inquiries: CollectionConfig = {
-  slug: 'inquiries',
+  slug: "inquiries",
   admin: {
-    useAsTitle: 'projectName',
-    description: 'Contact form submissions',
-    group: 'Form Submissions',
+    useAsTitle: "projectName",
+    description: "Contact form submissions",
+    group: "Form Submissions",
   },
   fields: [
     {
-      name: 'customerName',
-      type: 'text',
+      name: "customerName",
+      type: "text",
       required: true,
-      label: 'Customer Name',
+      label: "Customer Name",
     },
     {
-      name: 'email',
-      type: 'email',
+      name: "email",
+      type: "email",
       required: true,
-      label: 'Email',
+      label: "Email",
     },
     {
-      name: 'projectName',
-      type: 'text',
+      name: "phone",
+      type: "text",
       required: true,
-      label: 'Project Name',
+      label: "Phone",
+      validate: (value: string | null | undefined) => {
+        if (!value) return "Phone number is required";
+        if (/^\d{10}$/.test(value)) return true;
+        return "Phone number must be exactly 10 digits";
+      },
     },
     {
-      name: 'timeline',
-      type: 'text',
+      name: "projectName",
+      type: "text",
       required: true,
-      label: 'Timeline',
+      label: "Project Name",
     },
     {
-      name: 'description',
-      type: 'textarea',
+      name: "timeline",
+      type: "text",
       required: true,
-      label: 'Description',
+      label: "Timeline",
+    },
+    {
+      name: "description",
+      type: "textarea",
+      required: true,
+      label: "Description",
     },
   ],
-}
+};
