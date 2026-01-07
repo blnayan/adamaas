@@ -37,7 +37,7 @@ export const Products: CollectionConfig = {
               },
             },
           });
-          const page = Math.ceil(totalDocs / limit);
+          const page = Math.floor(totalDocs / limit) + 1;
           revalidatePath(`/shop/${page}`);
         }
       },
