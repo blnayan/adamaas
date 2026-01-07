@@ -3,6 +3,7 @@ import {
   type CollectionConfig,
   type CollectionAfterChangeHook,
   getPayload,
+  CollectionAfterDeleteHook,
 } from "payload";
 import config from "@payload-config";
 import { revalidatePath } from "next/cache";
@@ -17,13 +18,13 @@ export const Products: CollectionConfig = {
   },
   hooks: {
     afterChange: [
-      async ({ data, context }) => {
+      async ({ doc }) => {
         const payload = await getPayload({ config });
 
         revalidatePath("/");
-        revalidatePath(`/product/${data.slug}`);
+        revalidatePath(`/product/${doc.slug}`);
 
-        if (data.type === "product") {
+        if (doc.type === "product") {
           const limit = 9;
           const { totalDocs } = await payload.count({
             collection: "products",
@@ -32,7 +33,7 @@ export const Products: CollectionConfig = {
                 equals: "product",
               },
               createdAt: {
-                greater_than: data.createdAt,
+                greater_than: doc.createdAt,
               },
             },
           });
@@ -41,6 +42,32 @@ export const Products: CollectionConfig = {
         }
       },
     ] as CollectionAfterChangeHook<Product>[],
+    afterDelete: [
+      async ({ doc }) => {
+        const payload = await getPayload({ config });
+
+        revalidatePath("/");
+        revalidatePath(`/product/${doc.slug}`);
+        revalidatePath("/shop/[page]", "page");
+
+        if (doc.type === "product") {
+          const limit = 9;
+          const { totalDocs } = await payload.count({
+            collection: "products",
+            where: {
+              type: {
+                equals: "product",
+              },
+              createdAt: {
+                greater_than: doc.createdAt,
+              },
+            },
+          });
+          const page = Math.floor(totalDocs / limit) + 1;
+          revalidatePath(`/shop/${page}`);
+        }
+      },
+    ] as CollectionAfterDeleteHook<Product>[],
   },
   fields: [
     {
