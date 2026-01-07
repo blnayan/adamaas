@@ -37,7 +37,7 @@ export const Products: CollectionConfig = {
               },
             },
           });
-          const page = Math.floor(totalDocs / limit) + 1;
+          const page = Math.ceil(totalDocs / limit);
           revalidatePath(`/shop/${page}`);
         }
       },
@@ -48,7 +48,6 @@ export const Products: CollectionConfig = {
 
         revalidatePath("/");
         revalidatePath(`/product/${doc.slug}`);
-        revalidatePath("/shop/[page]", "page");
 
         if (doc.type === "product") {
           const limit = 9;
@@ -58,13 +57,13 @@ export const Products: CollectionConfig = {
               type: {
                 equals: "product",
               },
-              createdAt: {
-                greater_than: doc.createdAt,
-              },
             },
           });
-          const page = Math.floor(totalDocs / limit) + 1;
-          revalidatePath(`/shop/${page}`);
+          const page = Math.ceil((totalDocs + 1) / limit);
+
+          for (let i = 1; i <= page; i++) {
+            revalidatePath(`/shop/${i}`);
+          }
         }
       },
     ] as CollectionAfterDeleteHook<Product>[],
