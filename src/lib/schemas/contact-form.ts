@@ -5,7 +5,12 @@ export const contactFormSchema = z.object({
   projectName: z.string().min(2, "Project name must be at least 2 characters"),
   timeline: z.string().min(1, "Timeline is required"),
   email: z.email("Invalid email address"),
-  phone: z.string().regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
+  phone: z
+    .string()
+    .regex(
+      /^\(\d{3}\) \d{3}-\d{4}$/,
+      "Phone number must be in the format (xxx) xxx-xxxx",
+    ),
   description: z
     .string()
     .min(10, "Please provide more detail (at least 10 characters)"),

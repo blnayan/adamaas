@@ -27,8 +27,8 @@ export const Inquiries: CollectionConfig = {
       label: "Phone",
       validate: (value: string | null | undefined) => {
         if (!value) return "Phone number is required";
-        if (/^\d{10}$/.test(value)) return true;
-        return "Phone number must be exactly 10 digits";
+        if (/^\(\d{3}\) \d{3}-\d{4}$/.test(value)) return true;
+        return "Phone number must be in the format (xxx) xxx-xxxx";
       },
     },
     {

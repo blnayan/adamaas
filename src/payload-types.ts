@@ -213,6 +213,7 @@ export interface Inquiry {
   id: number;
   customerName: string;
   email: string;
+  phone: string;
   projectName: string;
   timeline: string;
   description: string;
@@ -383,6 +384,7 @@ export interface ProductsSelect<T extends boolean = true> {
 export interface InquiriesSelect<T extends boolean = true> {
   customerName?: T;
   email?: T;
+  phone?: T;
   projectName?: T;
   timeline?: T;
   description?: T;
