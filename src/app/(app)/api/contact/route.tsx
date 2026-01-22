@@ -2,6 +2,8 @@ import { getPayload } from "payload";
 import config from "@payload-config";
 import { NextResponse } from "next/server";
 import { contactFormSchema } from "@/lib/schemas/contact-form";
+import { render } from "@react-email/components";
+import ContactInquiry from "@/emails/ContactInquiry";
 
 const verifyEndpoint =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
@@ -40,11 +42,27 @@ export async function POST(req: Request) {
     }
 
     // Turnstile verification successful
-    // TODO: Add email functionality
-
     const validatedData = contactFormSchema.parse(formData);
 
     const payload = await getPayload({ config });
+
+    const emailHtml = await render(
+      <ContactInquiry
+        customerName={ validatedData.customerName }
+        email={ validatedData.email }
+        phone={ validatedData.phone }
+        projectName={ validatedData.projectName }
+        timeline={ validatedData.timeline }
+        description={ validatedData.description }
+      />
+    );
+
+    await payload.sendEmail({
+      from: process.env.INQUIRIES_FROM_EMAIL,
+      to: process.env.INQUIRIES_TO_EMAIL,
+      subject: `New Inquiry from ${validatedData.customerName}`,
+      html: emailHtml,
+    })
 
     await payload.create({
       collection: "inquiries",

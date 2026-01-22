@@ -1,6 +1,8 @@
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer';
+import nodemailer from 'nodemailer';
 import path from "path";
 import { buildConfig } from "payload";
 import { fileURLToPath } from "url";
@@ -35,6 +37,18 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || "",
     },
+  }),
+  email: nodemailerAdapter({
+    defaultFromAddress: "nick@adamaas.com",
+    defaultFromName: "Nick",
+    transport: nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT),
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    }),
   }),
   sharp,
   plugins: [
