@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { NavbarCart } from "./navbar-cart";
+import Image from "next/image";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 export function Navbar() {
   return (
@@ -8,6 +10,17 @@ export function Navbar() {
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between px-4 md:px-8">
         <div className="flex gap-6 md:gap-10">
           <Link href="/" className="flex items-center space-x-2">
+            <div className="w-8 rounded-md overflow-hidden">
+              <AspectRatio ratio={1 / 1}>
+                <Image
+                  src="/Adamaas_Logo_v2.jpg"
+                  alt="ADAMAAS Logo"
+                  className="object-contain"
+                  fill
+                />
+              </AspectRatio>
+            </div>
+
             <span className="text-xl font-bold tracking-tighter sm:inline-block">
               ADAMAAS
             </span>
