@@ -8,7 +8,7 @@ export default function MissionPage() {
       <div className="container max-w-3xl mx-auto space-y-12">
         <div className="text-center space-y-6">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tighter">
-            Mission Control
+            Mission
           </h1>
           <p className="text-xl text-muted-foreground">
             Why we build, how we build, and who we build for.
@@ -24,19 +24,16 @@ export default function MissionPage() {
         </div>
 
         <div className="prose prose-invert max-w-none">
-          <h2>Philosophy</h2>
+          <h2 className="text-4xl font-bold mb-4">Philosophy</h2>
           <p>
             We believe in open-source hardware. Every frame we design is
             available for free download because innovation shouldn't be
             paywalled. We sell the convenience of pre-built, tuned, and tested
             systems so you can spend less time soldering and more time flying.
           </p>
-
-          <h2>The Engineer</h2>
-          <p>
-            [Bio Placeholder] - I'm an engineer obsessed with efficiency and
-            durability.
-          </p>
+          <br />
+          <h2 className="text-4xl font-bold mb-4">The Engineer</h2>
+          <p>Nick - I'm an engineer obsessed with efficiency and durability.</p>
         </div>
 
         <div className="flex justify-center pt-8">

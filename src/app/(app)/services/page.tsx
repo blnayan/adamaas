@@ -20,8 +20,8 @@ export default function ServicesPage() {
           <span className="text-primary">Hardware Startups</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          I turn concepts into physical, functional prototypes — built in-house,
-          field-tested, and fully documented.
+          We turn concepts into physical, functional prototypes — built
+          in-house, field-tested, and fully documented.
         </p>
         <div className="inline-block bg-muted/50 rounded-full px-6 py-2 text-sm font-medium border border-border">
           Currently accepting 2–3 client projects per quarter
