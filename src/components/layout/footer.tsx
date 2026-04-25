@@ -7,7 +7,7 @@ export function Footer() {
     <footer className="border-t bg-background text-foreground py-12">
       <div className="container px-4 md:px-8 max-w-screen-2xl">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-          <div className="md:col-span-2">
+          <div className="md:col-span-3">
             <h3 className="text-lg font-bold mb-4">Adamaas</h3>
             <p className="text-sm text-muted-foreground mb-6 max-w-sm">
               Hardware that works. Built in-house. Shipped fast. Open-source
@@ -22,44 +22,6 @@ export function Footer() {
                 Subscribe
               </Button>
             </div>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-4">Shop</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
-                <Link
-                  href="/product/reaper"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Reaper
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/shop/nomad"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Nomad
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/shop/nexus"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Nexus
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/shop/bundle"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Full Bundle
-                </Link>
-              </li>
-            </ul>
           </div>
 
           <div>
@@ -87,14 +49,6 @@ export function Footer() {
                   className="hover:text-foreground transition-colors"
                 >
                   Blog
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/downloads"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Downloads
                 </Link>
               </li>
               <li>
