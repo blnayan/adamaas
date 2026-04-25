@@ -3,6 +3,17 @@ import { Button } from "@/components/ui/button";
 import { NavbarCart } from "./navbar-cart";
 import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Menu } from "lucide-react";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 
 export function Navbar() {
   return (
@@ -52,13 +63,77 @@ export function Navbar() {
             </Link>
           </nav>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <NavbarCart />
-          <Link href="/services">
-            <Button className="hidden sm:inline-flex bg-primary text-primary-foreground hover:bg-primary/90">
-              Hire For Prototyping
-            </Button>
-          </Link>
+          <div className="hidden sm:block">
+            <Link href="/services">
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                Hire For Prototyping
+              </Button>
+            </Link>
+          </div>
+          <div className="md:hidden flex items-center">
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-6 w-6" />
+                  <span className="sr-only">Toggle navigation menu</span>
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent>
+                <DrawerHeader className="text-left">
+                  <DrawerTitle>Navigation</DrawerTitle>
+                  <DrawerDescription>Explore our site</DrawerDescription>
+                </DrawerHeader>
+                <div className="flex flex-col gap-4 p-4">
+                  <DrawerClose asChild>
+                    <Link
+                      href="/shop/1"
+                      className="text-lg font-medium hover:text-primary"
+                    >
+                      Shop
+                    </Link>
+                  </DrawerClose>
+                  <DrawerClose asChild>
+                    <Link
+                      href="/services"
+                      className="text-lg font-medium hover:text-primary"
+                    >
+                      Services
+                    </Link>
+                  </DrawerClose>
+                  <DrawerClose asChild>
+                    <Link
+                      href="/mission"
+                      className="text-lg font-medium hover:text-primary"
+                    >
+                      Mission
+                    </Link>
+                  </DrawerClose>
+                  <DrawerClose asChild>
+                    <Link
+                      href="/blog"
+                      className="text-lg font-medium hover:text-primary"
+                    >
+                      Blog
+                    </Link>
+                  </DrawerClose>
+                  <DrawerClose asChild>
+                    <Link href="/services" className="sm:hidden mt-2">
+                      <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                        Hire For Prototyping
+                      </Button>
+                    </Link>
+                  </DrawerClose>
+                </div>
+                <DrawerFooter className="pt-2">
+                  <DrawerClose asChild>
+                    <Button variant="outline">Close</Button>
+                  </DrawerClose>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
+          </div>
         </div>
       </div>
     </header>
