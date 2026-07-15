@@ -1,36 +1,46 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { CartItem } from "@/lib/cart-context";
+import { getPayload } from "payload";
+import config from "@payload-config";
 import { generateOrderId } from "@/lib/utils";
+import {
+  buildLineItems,
+  checkoutRequestSchema,
+} from "@/lib/checkout/line-items";
 
 // Ensure STRIPE_SECRET_KEY is set in .env
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: Request) {
   try {
-    const { items } = (await req.json()) as { items: CartItem[] };
-
-    if (!items || items.length === 0) {
-      return new NextResponse("No items in cart", { status: 400 });
+    const parsed = checkoutRequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid checkout request" },
+        { status: 400 },
+      );
     }
 
-    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] =
-      items.map((item) => ({
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: item.variant
-              ? `${item.product.name} (${item.variant.name})`
-              : item.product.name,
-            description: item.product.tagline,
-            // images: [item.product.image], // Add real images later
-          },
-          unit_amount: Math.round(
-            (item.variant?.price ?? item.product.basePrice) * 100,
-          ), // Stripe expects cents
+    // Prices always come from the catalog, never from the client.
+    const { items } = parsed.data;
+    const payload = await getPayload({ config });
+    const productIds = [...new Set(items.map((item) => item.productId))];
+    const { docs: products } = await payload.find({
+      collection: "products",
+      where: { id: { in: productIds } },
+      pagination: false,
+    });
+
+    const result = buildLineItems(items, products);
+    if (!result.ok) {
+      return NextResponse.json(
+        {
+          error: "Some items in your cart are no longer available",
+          code: "CART_OUTDATED",
         },
-        quantity: item.quantity,
-      }));
+        { status: 409 },
+      );
+    }
 
     const orderId = generateOrderId();
 
@@ -43,7 +53,7 @@ export async function POST(req: Request) {
         enabled: true,
       },
       payment_method_types: ["card"],
-      line_items,
+      line_items: result.lineItems,
       mode: "payment",
       // order id is stored in payment intent metadata so that it is available in the stripe transaction details
       payment_intent_data: {

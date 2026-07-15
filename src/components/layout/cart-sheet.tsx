@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCart } from "@/lib/cart-context";
+import { reconcileWithCatalog } from "@/lib/cart/store";
 import { Trash2, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -33,8 +34,24 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items }),
+        body: JSON.stringify({
+          items: items.map((item) => ({
+            productId: item.product.id,
+            variantName: item.variant?.name,
+            quantity: item.quantity,
+          })),
+        }),
       });
+
+      if (response.status === 409) {
+        // The catalog changed since the cart was saved; sync and let the
+        // customer review before paying.
+        await reconcileWithCatalog();
+        toast.warning(
+          "Some items in your cart changed. Please review your cart and try again.",
+        );
+        return;
+      }
 
       if (!response.ok) throw new Error("Checkout failed");
 
