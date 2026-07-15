@@ -42,6 +42,11 @@ export default buildConfig({
   email: nodemailerAdapter({
     defaultFromAddress: "nick@adamaas.com",
     defaultFromName: "Nick",
+    // Without skipVerify the adapter opens a live SMTP connection on every
+    // Payload init; next build initializes Payload in many parallel workers,
+    // and the resulting connection burst makes Gmail throttle with 421.
+    // Sends still connect (and surface errors) at send time.
+    skipVerify: true,
     transport: nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT),
