@@ -10,7 +10,12 @@ import {
 } from "@/components/ui/pagination";
 import { ShopHero } from "@/components/shop/shop-hero";
 import { ProductGrid } from "@/components/shop/product-grid";
+import { SHOP_PAGE_SIZE, totalShopPages } from "@/lib/shop/pagination";
 import { notFound } from "next/navigation";
+
+// Safety net in case a revalidation hook is ever missed; the Products
+// collection hooks refresh these pages immediately on catalog changes.
+export const revalidate = 3600;
 
 type ShopPaginatedPageProps = {
   params: Promise<{ page: string }>;
@@ -21,7 +26,6 @@ export default async function ShopPaginatedPage({
 }: ShopPaginatedPageProps) {
   const { page: pageParam } = await params;
   const page = Number(pageParam);
-  const limit = 9;
 
   if (isNaN(page) || page < 1) {
     notFound();
@@ -49,7 +53,7 @@ export default async function ShopPaginatedPage({
         equals: "product",
       },
     },
-    limit,
+    limit: SHOP_PAGE_SIZE,
     page,
     sort: "-createdAt",
   });
@@ -122,7 +126,6 @@ export default async function ShopPaginatedPage({
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config });
-  const limit = 9;
 
   const { totalDocs } = await payload.count({
     collection: "products",
@@ -133,9 +136,7 @@ export async function generateStaticParams() {
     },
   });
 
-  const totalPages = Math.ceil(totalDocs / limit);
-
-  return Array.from({ length: totalPages }).map((_, i) => ({
+  return Array.from({ length: totalShopPages(totalDocs) }).map((_, i) => ({
     page: (i + 1).toString(),
   }));
 }

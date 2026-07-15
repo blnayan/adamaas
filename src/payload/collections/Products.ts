@@ -2,9 +2,24 @@ import { Product } from "@/payload-types";
 import {
   type CollectionConfig,
   type CollectionAfterChangeHook,
-  CollectionAfterDeleteHook,
+  type CollectionAfterDeleteHook,
 } from "payload";
 import { revalidatePath } from "next/cache";
+
+// Coarse but bulletproof: any catalog change refreshes every shop page in
+// one call, instead of computing which page a product lands on. Bundle
+// edits matter too — the bundle renders in the hero of every shop page.
+function revalidateShopPaths(doc: Product) {
+  revalidatePath("/");
+  revalidatePath(`/product/${doc.slug}`);
+  revalidatePath("/shop/[page]", "page");
+}
+
+const revalidateAfterChange: CollectionAfterChangeHook<Product> = ({ doc }) =>
+  revalidateShopPaths(doc);
+
+const revalidateAfterDelete: CollectionAfterDeleteHook<Product> = ({ doc }) =>
+  revalidateShopPaths(doc);
 
 export const Products: CollectionConfig = {
   slug: "products",
@@ -15,52 +30,8 @@ export const Products: CollectionConfig = {
     read: () => true,
   },
   hooks: {
-    afterChange: [
-      async ({ doc, req: { payload } }) => {
-        revalidatePath("/");
-        revalidatePath(`/product/${doc.slug}`);
-
-        if (doc.type === "product") {
-          const limit = 9;
-          const { totalDocs } = await payload.count({
-            collection: "products",
-            where: {
-              type: {
-                equals: "product",
-              },
-              createdAt: {
-                greater_than: doc.createdAt,
-              },
-            },
-          });
-          const page = Math.floor(totalDocs / limit) + 1;
-          revalidatePath(`/shop/${page}`);
-        }
-      },
-    ] as CollectionAfterChangeHook<Product>[],
-    afterDelete: [
-      async ({ doc, req: { payload } }) => {
-        revalidatePath("/");
-        revalidatePath(`/product/${doc.slug}`);
-
-        if (doc.type === "product") {
-          const limit = 9;
-          const { totalDocs } = await payload.count({
-            collection: "products",
-            where: {
-              type: {
-                equals: "product",
-              },
-            },
-          });
-          const page = Math.ceil((totalDocs + 1) / limit);
-
-          for (let i = 1; i <= page; i++) {
-            revalidatePath(`/shop/${i}`);
-          }
-        }
-      },
-    ] as CollectionAfterDeleteHook<Product>[],
+    afterChange: [revalidateAfterChange],
+    afterDelete: [revalidateAfterDelete],
   },
   fields: [
     {
