@@ -9,20 +9,13 @@ import {
   SheetFooter,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCart } from "@/lib/cart-context";
 import { reconcileWithCatalog } from "@/lib/cart/store";
 import { Trash2, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
-import { loadStripe } from "@stripe/stripe-js";
 import z from "zod";
-
-// Make sure to populate NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in .env
-const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-  ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
-  : null;
 
 export function CartSheet({ children }: { children: React.ReactNode }) {
   const { items, removeItem, itemCount, total, isOpen, setIsOpen } = useCart();

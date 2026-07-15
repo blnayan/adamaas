@@ -69,7 +69,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <CardContent className="px-6 flex flex-col gap-2 grow">
         <div className="flex justify-between items-start">
           <Link
-            href={`/shop/${product.slug}`}
+            href={`/product/${product.slug}`}
             className="hover:text-primary transition-colors"
           >
             <h3 className="text-xl font-bold">{product.name}</h3>

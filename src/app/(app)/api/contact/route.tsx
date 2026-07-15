@@ -1,6 +1,7 @@
 import { getPayload } from "payload";
 import config from "@payload-config";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { contactFormSchema } from "@/lib/schemas/contact-form";
 import { render } from "@react-email/components";
 import ContactInquiry from "@/emails/ContactInquiry";
@@ -9,18 +10,36 @@ const verifyEndpoint =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
 export async function POST(req: Request) {
+  let body: unknown;
   try {
-    const body = await req.json();
-    const { token, ...formData } = body;
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
 
-    // Verify Turnstile
-    if (!token) {
-      return NextResponse.json(
-        { error: "Missing Turnstile token" },
-        { status: 400 },
-      );
-    }
+  const { token, ...formData } = body as { token?: string } & Record<
+    string,
+    unknown
+  >;
 
+  // Verify Turnstile
+  if (!token) {
+    return NextResponse.json(
+      { error: "Missing Turnstile token" },
+      { status: 400 },
+    );
+  }
+
+  const parsed = contactFormSchema.safeParse(formData);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Invalid form data", issues: z.treeifyError(parsed.error) },
+      { status: 400 },
+    );
+  }
+  const validatedData = parsed.data;
+
+  try {
     const verificationResponse = await fetch(verifyEndpoint, {
       method: "POST",
       headers: {
@@ -41,20 +60,17 @@ export async function POST(req: Request) {
       );
     }
 
-    // Turnstile verification successful
-    const validatedData = contactFormSchema.parse(formData);
-
     const payload = await getPayload({ config });
 
     const emailHtml = await render(
-      <ContactInquiry
-        customerName={ validatedData.customerName }
-        email={ validatedData.email }
-        phone={ validatedData.phone }
-        projectName={ validatedData.projectName }
-        timeline={ validatedData.timeline }
-        description={ validatedData.description }
-      />
+      ContactInquiry({
+        customerName: validatedData.customerName,
+        email: validatedData.email,
+        phone: validatedData.phone,
+        projectName: validatedData.projectName,
+        timeline: validatedData.timeline,
+        description: validatedData.description,
+      }),
     );
 
     await payload.sendEmail({
@@ -62,7 +78,7 @@ export async function POST(req: Request) {
       to: process.env.INQUIRIES_TO_EMAIL,
       subject: `New Inquiry from ${validatedData.customerName}`,
       html: emailHtml,
-    })
+    });
 
     await payload.create({
       collection: "inquiries",
@@ -73,7 +89,7 @@ export async function POST(req: Request) {
       { message: "Inquiry submitted successfully" },
       { status: 201 },
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Inquiry submission error:", error);
     return NextResponse.json(
       { error: "Failed to submit inquiry" },

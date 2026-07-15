@@ -44,11 +44,6 @@ export function SuccessContent({ children, sessionId }: SuccessContentProps) {
             Continue Shopping
           </Button>
         </Link>
-        <Link href="/downloads">
-          <Button size="lg" variant="outline">
-            View Downloads
-          </Button>
-        </Link>
       </div>
     </div>
   );

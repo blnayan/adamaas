@@ -84,7 +84,8 @@ export default function ServicesPage() {
                     1
                   </div>
                   <p className="text-muted-foreground">
-                    We review your requirements to ensure we're a good fit.
+                    We review your requirements to ensure we&apos;re a good
+                    fit.
                   </p>
                 </li>
                 <li className="flex items-start gap-3">

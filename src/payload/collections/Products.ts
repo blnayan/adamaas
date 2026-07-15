@@ -2,10 +2,8 @@ import { Product } from "@/payload-types";
 import {
   type CollectionConfig,
   type CollectionAfterChangeHook,
-  getPayload,
   CollectionAfterDeleteHook,
 } from "payload";
-import config from "@payload-config";
 import { revalidatePath } from "next/cache";
 
 export const Products: CollectionConfig = {
@@ -18,9 +16,7 @@ export const Products: CollectionConfig = {
   },
   hooks: {
     afterChange: [
-      async ({ doc }) => {
-        const payload = await getPayload({ config });
-
+      async ({ doc, req: { payload } }) => {
         revalidatePath("/");
         revalidatePath(`/product/${doc.slug}`);
 
@@ -43,9 +39,7 @@ export const Products: CollectionConfig = {
       },
     ] as CollectionAfterChangeHook<Product>[],
     afterDelete: [
-      async ({ doc }) => {
-        const payload = await getPayload({ config });
-
+      async ({ doc, req: { payload } }) => {
         revalidatePath("/");
         revalidatePath(`/product/${doc.slug}`);
 

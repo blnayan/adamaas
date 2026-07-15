@@ -60,13 +60,12 @@ export function ContactForm() {
       onSubmit: contactFormSchema,
     },
     onSubmit: async ({ value }) => {
-      setIsSubmitting(true);
-
       if (!token) {
         toast.error("Please complete the verification check.");
         return;
       }
 
+      setIsSubmitting(true);
       try {
         const response = await fetch("/api/contact", {
           method: "POST",
@@ -87,9 +86,9 @@ export function ContactForm() {
       } catch (error) {
         toast.error("Something went wrong. Please try again.");
         console.error(error);
+      } finally {
+        setIsSubmitting(false);
       }
-
-      setIsSubmitting(false);
     },
   });
 
@@ -110,9 +109,8 @@ export function ContactForm() {
         </CardHeader>
         <CardContent>
           <FieldGroup className="gap-6">
-            <form.Field
-              name="customerName"
-              children={(field) => (
+            <form.Field name="customerName">
+              {(field) => (
                 <Field>
                   <FieldLabel htmlFor={field.name}>Name</FieldLabel>
                   <FieldContent>
@@ -128,11 +126,10 @@ export function ContactForm() {
                   <FieldError errors={field.state.meta.errors} />
                 </Field>
               )}
-            />
+            </form.Field>
 
-            <form.Field
-              name="email"
-              children={(field) => (
+            <form.Field name="email">
+              {(field) => (
                 <Field>
                   <FieldLabel htmlFor={field.name}>Email</FieldLabel>
                   <FieldContent>
@@ -148,11 +145,10 @@ export function ContactForm() {
                   <FieldError errors={field.state.meta.errors} />
                 </Field>
               )}
-            />
+            </form.Field>
 
-            <form.Field
-              name="phone"
-              children={(field) => (
+            <form.Field name="phone">
+              {(field) => (
                 <Field>
                   <FieldLabel htmlFor={field.name}>Phone</FieldLabel>
                   <FieldContent>
@@ -173,11 +169,10 @@ export function ContactForm() {
                   <FieldError errors={field.state.meta.errors} />
                 </Field>
               )}
-            />
+            </form.Field>
 
-            <form.Field
-              name="projectName"
-              children={(field) => (
+            <form.Field name="projectName">
+              {(field) => (
                 <Field>
                   <FieldLabel htmlFor={field.name}>Project Name</FieldLabel>
                   <FieldContent>
@@ -193,11 +188,10 @@ export function ContactForm() {
                   <FieldError errors={field.state.meta.errors} />
                 </Field>
               )}
-            />
+            </form.Field>
 
-            <form.Field
-              name="timeline"
-              children={(field) => (
+            <form.Field name="timeline">
+              {(field) => (
                 <Field>
                   <FieldLabel htmlFor={field.name}>Timeline</FieldLabel>
                   <FieldContent>
@@ -213,11 +207,10 @@ export function ContactForm() {
                   <FieldError errors={field.state.meta.errors} />
                 </Field>
               )}
-            />
+            </form.Field>
 
-            <form.Field
-              name="description"
-              children={(field) => (
+            <form.Field name="description">
+              {(field) => (
                 <Field>
                   <FieldLabel htmlFor={field.name}>Description</FieldLabel>
                   <FieldContent>
@@ -234,7 +227,7 @@ export function ContactForm() {
                   <FieldError errors={field.state.meta.errors} />
                 </Field>
               )}
-            />
+            </form.Field>
           </FieldGroup>
         </CardContent>
         <CardFooter className="flex flex-col gap-6 items-start">

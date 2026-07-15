@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -27,13 +26,16 @@ export default function MissionPage() {
           <h2 className="text-4xl font-bold mb-4">Philosophy</h2>
           <p>
             We believe in open-source hardware. Every frame we design is
-            available for free download because innovation shouldn't be
+            available for free download because innovation shouldn&apos;t be
             paywalled. We sell the convenience of pre-built, tuned, and tested
             systems so you can spend less time soldering and more time flying.
           </p>
           <br />
           <h2 className="text-4xl font-bold mb-4">The Engineer</h2>
-          <p>Nick - I'm an engineer obsessed with efficiency and durability.</p>
+          <p>
+            Nick - I&apos;m an engineer obsessed with efficiency and
+            durability.
+          </p>
         </div>
 
         <div className="flex justify-center pt-8">
