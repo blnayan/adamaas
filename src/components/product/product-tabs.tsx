@@ -20,17 +20,19 @@ export function ProductTabs({ product }: ProductTabsProps) {
   return (
     <section className="container px-4 md:px-8 max-w-screen-2xl py-12">
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-muted h-auto">
-          <TabsTrigger value="overview" className="h-12 text-md">
+        {/* The list's default height uses this group-data variant, so a plain
+            h-auto never replaces it in tailwind-merge — match the variant. */}
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 group-data-[orientation=horizontal]/tabs:h-auto">
+          <TabsTrigger value="overview" className="h-12">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="gallery" className="h-12 text-md">
+          <TabsTrigger value="gallery" className="h-12">
             Gallery
           </TabsTrigger>
-          <TabsTrigger value="footage" className="h-12 text-md">
+          <TabsTrigger value="footage" className="h-12">
             Flight Footage
           </TabsTrigger>
-          <TabsTrigger value="downloads" className="h-12 text-md">
+          <TabsTrigger value="downloads" className="h-12">
             Downloads
           </TabsTrigger>
         </TabsList>
