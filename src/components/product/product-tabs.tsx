@@ -23,16 +23,16 @@ export function ProductTabs({ product }: ProductTabsProps) {
         {/* The list's default height uses this group-data variant, so a plain
             h-auto never replaces it in tailwind-merge — match the variant. */}
         <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 group-data-[orientation=horizontal]/tabs:h-auto">
-          <TabsTrigger value="overview" className="h-12">
+          <TabsTrigger value="overview" className="h-12 text-base">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="gallery" className="h-12">
+          <TabsTrigger value="gallery" className="h-12 text-base">
             Gallery
           </TabsTrigger>
-          <TabsTrigger value="footage" className="h-12">
+          <TabsTrigger value="footage" className="h-12 text-base">
             Flight Footage
           </TabsTrigger>
-          <TabsTrigger value="downloads" className="h-12">
+          <TabsTrigger value="downloads" className="h-12 text-base">
             Downloads
           </TabsTrigger>
         </TabsList>
