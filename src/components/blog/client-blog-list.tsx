@@ -14,6 +14,9 @@ import {
 } from '@/components/ui/pagination';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { formatLongDate } from '@/lib/format';
+
+const BLOG_PAGE_SIZE = 9;
 
 type SimplifiedBlog = {
   id: string | number;
@@ -31,12 +34,10 @@ type ClientBlogListProps = {
 
 export function ClientBlogList({ blogs }: ClientBlogListProps) {
   const [page, setPage] = useState(1);
-  const limit = 9;
-  const totalPages = Math.ceil(blogs.length / limit);
+  const totalPages = Math.ceil(blogs.length / BLOG_PAGE_SIZE);
 
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + limit;
-  const currentBlogs = blogs.slice(startIndex, endIndex);
+  const startIndex = (page - 1) * BLOG_PAGE_SIZE;
+  const currentBlogs = blogs.slice(startIndex, startIndex + BLOG_PAGE_SIZE);
 
   if (blogs.length === 0) {
     return (
@@ -79,11 +80,7 @@ export function ClientBlogList({ blogs }: ClientBlogListProps) {
                 </p>
               </CardContent>
               <CardFooter className="text-sm text-muted-foreground">
-                {new Date(blog.createdAt).toLocaleDateString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}
+                {formatLongDate(blog.createdAt)}
               </CardFooter>
             </Card>
           </Link>

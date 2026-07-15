@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ArrowRight } from "lucide-react";
 import { Product } from "@/payload-types";
+import { resolveImage } from "@/lib/media";
 
 interface FeaturedCarouselProps {
   products: Product[];
@@ -38,7 +39,9 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
           </div>
         ) : (
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3 md:overflow-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {products.map((product) => (
+            {products.map((product) => {
+              const image = resolveImage(product.image, product.name);
+              return (
               <div
                 key={product.id}
                 className="min-w-full md:min-w-0 md:flex-1 snap-center"
@@ -48,12 +51,10 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
                     <CardContent className="px-6 flex flex-col h-full gap-6">
                       <div className="rounded-lg overflow-hidden bg-muted relative">
                         <AspectRatio ratio={16 / 9}>
-                          {product.image &&
-                          typeof product.image !== "number" &&
-                          product.image.url ? (
+                          {image ? (
                             <Image
-                              src={product.image.url}
-                              alt={product.image.alt}
+                              src={image.url}
+                              alt={image.alt}
                               fill
                               className="object-cover group-hover:scale-105 transition-transform duration-500"
                             />
@@ -92,7 +93,8 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
                   </Card>
                 </Link>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
 

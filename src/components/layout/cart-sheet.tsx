@@ -10,12 +10,15 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart-context";
+import { unitPrice } from "@/lib/cart/cart";
 import { reconcileWithCatalog } from "@/lib/cart/store";
+import { startCheckout } from "@/lib/checkout/client";
+import { formatUsd } from "@/lib/format";
+import { resolveImage } from "@/lib/media";
 import { Trash2, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
-import z from "zod";
 
 export function CartSheet({ children }: { children: React.ReactNode }) {
   const { items, removeItem, itemCount, total, isOpen, setIsOpen } = useCart();
@@ -23,39 +26,24 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
 
   const handleCheckout = async () => {
     setIsLoading(true);
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: items.map((item) => ({
-            productId: item.product.id,
-            variantName: item.variant?.name,
-            quantity: item.quantity,
-          })),
-        }),
-      });
-
-      if (response.status === 409) {
+    const result = await startCheckout(items);
+    switch (result.status) {
+      case "redirect":
+        window.location.href = result.url;
+        break;
+      case "cart-outdated":
         // The catalog changed since the cart was saved; sync and let the
         // customer review before paying.
         await reconcileWithCatalog();
         toast.warning(
           "Some items in your cart changed. Please review your cart and try again.",
         );
-        return;
-      }
-
-      if (!response.ok) throw new Error("Checkout failed");
-
-      const url = z.url().parse((await response.json())?.url);
-
-      window.location.href = url;
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to start checkout");
-    } finally {
-      setIsLoading(false);
+        setIsLoading(false);
+        break;
+      case "error":
+        toast.error("Failed to start checkout");
+        setIsLoading(false);
+        break;
     }
   };
 
@@ -75,15 +63,18 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
           <>
             <div className="flex-1 overflow-y-auto px-4">
               <div className="space-y-4">
-                {items.map((item) => (
+                {items.map((item) => {
+                  const image = resolveImage(
+                    item.product.image,
+                    item.product.name,
+                  );
+                  return (
                   <div key={item.id} className="flex gap-4">
                     <div className="relative h-20 w-20 rounded-md bg-muted overflow-hidden shrink-0">
-                      {item.product.image &&
-                      typeof item.product.image !== "number" &&
-                      item.product.image.url ? (
+                      {image ? (
                         <Image
-                          src={item.product.image.url}
-                          alt={item.product.image.alt || item.product.name}
+                          src={image.url}
+                          alt={image.alt}
                           fill
                           className="object-cover"
                         />
@@ -103,7 +94,7 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                         </span>
                       )}
                       <span className="text-sm font-bold text-primary">
-                        ${item.variant?.price ?? item.product.basePrice}
+                        {formatUsd(unitPrice(item))}
                       </span>
                     </div>
                     <div className="flex flex-col items-end gap-2">
@@ -120,14 +111,15 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                       </span>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
             <SheetFooter className="border-t border-border px-4 py-4 sm:flex-col sm:justify-center">
               <div className="flex justify-between items-center text-lg font-bold mb-4">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>{formatUsd(total)}</span>
               </div>
               <Button
                 className="w-full bg-primary text-primary-foreground hover:bg-primary/90"

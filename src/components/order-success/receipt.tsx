@@ -1,9 +1,8 @@
-import Stripe from "stripe";
+import type Stripe from "stripe";
 import { Card, CardContent } from "@/components/ui/card";
 import { PackageCheck } from "lucide-react";
-
-// Initialize Stripe (Server-side)
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { getStripe } from "@/lib/stripe";
+import { formatUsdFromCents } from "@/lib/format";
 
 interface ReceiptProps {
   sessionId: string;
@@ -13,7 +12,7 @@ export async function Receipt({ sessionId }: ReceiptProps) {
   if (!sessionId) return null;
 
   try {
-    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+    const session = await getStripe().checkout.sessions.retrieve(sessionId, {
       expand: ["line_items", "payment_intent"],
     });
 
@@ -56,13 +55,13 @@ export async function Receipt({ sessionId }: ReceiptProps) {
                     </div>
                   </div>
                   <div className="font-bold">
-                    ${((item.amount_total ?? 0) / 100).toFixed(2)}
+                    {formatUsdFromCents(item.amount_total ?? 0)}
                   </div>
                 </div>
               ))}
               <div className="border-t border-border pt-4 flex justify-between items-center font-bold text-lg">
                 <span>Total Paid</span>
-                <span>${(amountTotal / 100).toFixed(2)}</span>
+                <span>{formatUsdFromCents(amountTotal)}</span>
               </div>
             </div>
           </CardContent>

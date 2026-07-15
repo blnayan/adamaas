@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Product } from "@/payload-types";
 import { useCart, Variant } from "@/lib/cart-context";
+import { resolveImage } from "@/lib/media";
 
 interface ProductCardProps {
   product: Product;
@@ -26,6 +27,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const [selectedVariant, setSelectedVariant] = useState<Variant | undefined>(
     product.variants?.[0],
   );
+  const image = resolveImage(product.image, product.name);
 
   return (
     <Card className="h-full border-border bg-card flex flex-col overflow-hidden hover:border-primary/50 transition-colors group">
@@ -36,12 +38,10 @@ export function ProductCard({ product }: ProductCardProps) {
               href={`/product/${product.slug}`}
               className="block h-full w-full relative"
             >
-              {product.image &&
-              typeof product.image !== "number" &&
-              product.image.url ? (
+              {image ? (
                 <Image
-                  src={product.image.url}
-                  alt={product.image.alt}
+                  src={image.url}
+                  alt={image.alt}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />

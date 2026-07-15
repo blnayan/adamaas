@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { RichText } from '@payloadcms/richtext-lexical/react';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { resolveImageOrFallback } from '@/lib/media';
+import { formatLongDate } from '@/lib/format';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -32,9 +34,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
-  const image = typeof post.heroImage === 'object' ? post.heroImage : null;
-  const imageUrl = image?.url || '/Adamaas_Logo_v2.jpg';
-  const imageAlt = image?.alt || post.title;
+  const image = resolveImageOrFallback(post.heroImage, post.title);
 
   return (
     <div className="min-h-screen bg-background py-10 px-4 md:py-20">
@@ -51,21 +51,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             {post.title}
           </h1>
           <div className="flex items-center text-muted-foreground space-x-4">
-            <time dateTime={post.createdAt}>
-              {new Date(post.createdAt).toLocaleDateString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric',
-              })}
-            </time>
+            <time dateTime={post.createdAt}>{formatLongDate(post.createdAt)}</time>
           </div>
         </div>
 
         <div className="w-full relative rounded-xl overflow-hidden bg-muted border border-border">
           <AspectRatio ratio={16 / 9}>
             <Image
-              src={imageUrl}
-              alt={imageAlt}
+              src={image.url}
+              alt={image.alt}
               fill
               className="object-cover"
               priority

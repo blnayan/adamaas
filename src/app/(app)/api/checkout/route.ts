@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import { generateOrderId } from "@/lib/utils";
+import { getStripe } from "@/lib/stripe";
+import { getBaseUrl } from "@/lib/env";
 import {
   buildLineItems,
   checkoutRequestSchema,
 } from "@/lib/checkout/line-items";
-
-// Ensure STRIPE_SECRET_KEY is set in .env
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: Request) {
   try {
@@ -43,8 +41,9 @@ export async function POST(req: Request) {
     }
 
     const orderId = generateOrderId();
+    const baseUrl = getBaseUrl();
 
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       billing_address_collection: "required",
       shipping_address_collection: {
         allowed_countries: ["US", "CA"],
@@ -61,8 +60,8 @@ export async function POST(req: Request) {
           orderId,
         },
       },
-      success_url: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/order/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/shop/1`,
+      success_url: `${baseUrl}/order/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/shop/1`,
     });
 
     return NextResponse.json({ url: session.url });

@@ -24,23 +24,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
+import { formatPhoneNumber } from "@/lib/phone";
 
 import { Turnstile, TurnstileInstance } from "@marsidev/react-turnstile";
 import { useRef, useState } from "react";
-
-const formatPhoneNumber = (value: string) => {
-  if (!value) return value;
-  const phoneNumber = value.replace(/[^\d]/g, "");
-  const phoneNumberLength = phoneNumber.length;
-  if (phoneNumberLength < 4) return phoneNumber;
-  if (phoneNumberLength < 7) {
-    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
-  }
-  return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(
-    6,
-    10,
-  )}`;
-};
 
 export function ContactForm() {
   const turnstileRef = useRef<TurnstileInstance>(null);
@@ -157,11 +144,9 @@ export function ContactForm() {
                       name={field.name}
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) => {
-                        const rawValue = e.target.value.replace(/\D/g, "");
-                        const formattedValue = formatPhoneNumber(rawValue);
-                        field.handleChange(formattedValue);
-                      }}
+                      onChange={(e) =>
+                        field.handleChange(formatPhoneNumber(e.target.value))
+                      }
                       placeholder="(555) 000-0000"
                       maxLength={14} // (555) 555-5555 is 14 chars
                     />

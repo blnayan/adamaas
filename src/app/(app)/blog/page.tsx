@@ -1,6 +1,7 @@
 import { getPayload } from 'payload';
 import config from '@payload-config';
 import { ClientBlogList } from '@/components/blog/client-blog-list';
+import { resolveImageOrFallback } from '@/lib/media';
 
 export const revalidate = 3600; // default revalidation if hooks miss
 
@@ -15,15 +16,15 @@ export default async function BlogIndexPage() {
   });
 
   const simplifiedBlogs = blogs.map(blog => {
-    const image = typeof blog.heroImage === 'object' ? blog.heroImage : null;
+    const image = resolveImageOrFallback(blog.heroImage, blog.title);
     return {
       id: blog.id,
       title: blog.title,
       slug: blog.slug,
       excerpt: blog.excerpt,
       createdAt: blog.createdAt,
-      imageUrl: image?.url || '/Adamaas_Logo_v2.jpg',
-      imageAlt: image?.alt || blog.title,
+      imageUrl: image.url,
+      imageAlt: image.alt,
     };
   });
 

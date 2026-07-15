@@ -1,4 +1,4 @@
-import { SERVICES } from "@/lib/data";
+import { SERVICES } from "@/lib/services";
 import { ContactForm } from "@/components/services/contact-form";
 import {
   Card,

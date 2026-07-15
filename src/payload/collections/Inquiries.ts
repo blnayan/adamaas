@@ -1,4 +1,5 @@
 import { CollectionConfig } from "payload";
+import { PHONE_REGEX, PHONE_FORMAT_MESSAGE } from "@/lib/phone";
 
 export const Inquiries: CollectionConfig = {
   slug: "inquiries",
@@ -27,8 +28,8 @@ export const Inquiries: CollectionConfig = {
       label: "Phone",
       validate: (value: string | null | undefined) => {
         if (!value) return "Phone number is required";
-        if (/^\(\d{3}\) \d{3}-\d{4}$/.test(value)) return true;
-        return "Phone number must be in the format (xxx) xxx-xxxx";
+        if (PHONE_REGEX.test(value)) return true;
+        return PHONE_FORMAT_MESSAGE;
       },
     },
     {
