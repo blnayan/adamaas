@@ -76,6 +76,7 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                           src={image.url}
                           alt={image.alt}
                           fill
+                          sizes="80px"
                           className="object-cover"
                         />
                       ) : (

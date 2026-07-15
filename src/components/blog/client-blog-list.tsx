@@ -65,6 +65,7 @@ export function ClientBlogList({ blogs }: ClientBlogListProps) {
                     src={blog.imageUrl}
                     alt={blog.imageAlt}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover transition-transform group-hover:scale-105"
                   />
                 </AspectRatio>

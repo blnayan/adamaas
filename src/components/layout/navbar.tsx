@@ -28,6 +28,7 @@ export function Navbar() {
                   alt="ADAMAAS Logo"
                   className="object-contain"
                   fill
+                  sizes="32px"
                 />
               </AspectRatio>
             </div>
