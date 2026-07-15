@@ -6,18 +6,28 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useMemo,
+  useSyncExternalStore,
 } from "react";
 import { Product } from "@/payload-types";
 import { toast } from "sonner";
+import {
+  type CartItem,
+  type Variant,
+  cartTotal,
+  itemCount as countItems,
+} from "@/lib/cart/cart";
+import {
+  addToCart,
+  clearCart as clearStoredCart,
+  getCartSnapshot,
+  getServerCartSnapshot,
+  reconcileWithCatalog,
+  removeFromCart,
+  subscribe,
+} from "@/lib/cart/store";
 
-export type Variant = NonNullable<Product["variants"]>[number];
-
-export interface CartItem {
-  id: string; // Unique ID (product.slug + variant)
-  product: Product;
-  variant?: Variant;
-  quantity: number;
-}
+export type { CartItem, Variant };
 
 interface CartContextType {
   items: CartItem[];
@@ -25,6 +35,7 @@ interface CartContextType {
   removeItem: (itemId: string) => void;
   clearCart: () => void;
   itemCount: number;
+  total: number;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
 }
@@ -32,79 +43,40 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const items = useSyncExternalStore(
+    subscribe,
+    getCartSnapshot,
+    getServerCartSnapshot,
+  );
   const [isOpen, setIsOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
 
+  // The cart is persisted in localStorage, so products may have been edited
+  // or removed from the catalog since it was saved. Re-validate on mount.
   useEffect(() => {
-    const saved = localStorage.getItem("cart");
-    if (saved) {
-      try {
-        setItems(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to parse cart", e);
+    reconcileWithCatalog().then((changed) => {
+      if (changed) {
+        toast.info("Your cart was updated to match the current catalog.");
       }
-    }
-    // ensures that the functions are only called after the component is mounted
-    setIsMounted(true);
+    });
   }, []);
 
-  useEffect(() => {
-    if (!isMounted) return; // ensures this function is only called after the component is mounted to prevent race conditions
-    localStorage.setItem("cart", JSON.stringify(items));
-  }, [items, isMounted]);
+  const addItem = useCallback((product: Product, variant?: Variant) => {
+    addToCart(product, variant);
+    toast.success(`Added ${product.name} to cart`);
+  }, []);
 
-  const addItem = useCallback(
-    (product: Product, variant?: Variant) => {
-      if (!isMounted) return; // ensures this function is only called after the component is mounted to prevent race conditions
-      setItems((prev) => {
-        const itemId = variant
-          ? `${product.slug}-${variant.name}`
-          : product.slug;
-        const existing = prev.find((item) => item.id === itemId);
-
-        if (existing) {
-          toast.success(`Added another ${product.name} to cart`);
-          return prev.map((item) =>
-            item.id === itemId
-              ? { ...item, quantity: item.quantity + 1 }
-              : item,
-          );
-        }
-
-        toast.success(`Added ${product.name} to cart`);
-        return [...prev, { id: itemId, product, variant, quantity: 1 }];
-      });
-    },
-    [isMounted],
-  );
-
-  const removeItem = useCallback(
-    (itemId: string) => {
-      if (!isMounted) return; // ensures this function is only called after the component is mounted to prevent race conditions
-      setItems((prev) => prev.filter((item) => item.id !== itemId));
-    },
-    [isMounted],
-  );
-
-  const clearCart = useCallback(() => {
-    if (!isMounted) return; // ensures this function is only called after the component is mounted to prevent race conditions
-    setItems([]);
-  }, [isMounted]);
-
-  const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
-
-  const value = React.useMemo(
+  const value = useMemo(
     () => ({
       items,
       addItem,
-      removeItem,
-      clearCart,
-      itemCount,
+      removeItem: removeFromCart,
+      clearCart: clearStoredCart,
+      itemCount: countItems(items),
+      total: cartTotal(items),
       isOpen,
       setIsOpen,
     }),
-    [items, addItem, removeItem, clearCart, itemCount, isOpen],
+    [items, addItem, isOpen],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

@@ -24,14 +24,8 @@ const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
   : null;
 
 export function CartSheet({ children }: { children: React.ReactNode }) {
-  const { items, removeItem, itemCount, isOpen, setIsOpen } = useCart();
+  const { items, removeItem, itemCount, total, isOpen, setIsOpen } = useCart();
   const [isLoading, setIsLoading] = useState(false);
-
-  const total = items.reduce(
-    (acc, item) =>
-      acc + (item.variant?.price ?? item.product.basePrice) * item.quantity,
-    0,
-  );
 
   const handleCheckout = async () => {
     setIsLoading(true);
