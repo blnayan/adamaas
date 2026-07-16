@@ -65,7 +65,7 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
               <div className="space-y-4">
                 {items.map((item) => {
                   const image = resolveImage(
-                    item.product.image,
+                    item.product.heroImage,
                     item.product.name,
                   );
                   return (

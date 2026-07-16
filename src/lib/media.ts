@@ -18,6 +18,15 @@ export function resolveImage(
   return { url: value.url, alt: value.alt || fallbackAlt };
 }
 
+/** Resolve a Payload upload field to a downloadable URL, with the same
+ * narrowing as {@link resolveImage} but no alt handling. */
+export function resolveFileUrl(
+  value: number | Media | null | undefined,
+): string | null {
+  if (!value || typeof value === "number" || !value.url) return null;
+  return value.url;
+}
+
 const FALLBACK_IMAGE_URL = "/Adamaas_Logo_v2.jpg";
 
 /** Like {@link resolveImage}, but falls back to the site logo instead of

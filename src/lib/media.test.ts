@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Media } from "@/payload-types";
-import { resolveImage, resolveImageOrFallback } from "./media";
+import { resolveFileUrl, resolveImage, resolveImageOrFallback } from "./media";
 
 function makeMedia(overrides: Partial<Media> = {}): Media {
   return {
@@ -39,6 +39,24 @@ describe("resolveImage", () => {
       url: "/media/drone.jpg",
       alt: "Reaper",
     });
+  });
+});
+
+describe("resolveFileUrl", () => {
+  it("resolves a populated media document to its url", () => {
+    expect(resolveFileUrl(makeMedia({ url: "/media/frame.3mf" }))).toBe(
+      "/media/frame.3mf",
+    );
+  });
+
+  it("returns null for null, undefined, or an unpopulated relation", () => {
+    expect(resolveFileUrl(null)).toBeNull();
+    expect(resolveFileUrl(undefined)).toBeNull();
+    expect(resolveFileUrl(7)).toBeNull();
+  });
+
+  it("returns null when the media has no url", () => {
+    expect(resolveFileUrl(makeMedia({ url: null }))).toBeNull();
   });
 });
 

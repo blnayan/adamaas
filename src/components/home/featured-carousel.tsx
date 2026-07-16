@@ -40,7 +40,7 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
         ) : (
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3 md:overflow-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {products.map((product) => {
-              const image = resolveImage(product.image, product.name);
+              const image = resolveImage(product.heroImage, product.name);
               return (
               <div
                 key={product.id}

@@ -183,6 +183,27 @@ export interface Product {
   tagline: string;
   basePrice: number;
   description: string;
+  /**
+   * Short punchy copy shown in the hero under the tagline.
+   */
+  heroDescription?: string | null;
+  /**
+   * Open-source files offered for direct download on the product's Downloads tab.
+   */
+  downloadFiles?:
+    | {
+        label: string;
+        file: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  useCases?:
+    | {
+        title: string;
+        description: string;
+        id?: string | null;
+      }[]
+    | null;
   badges?:
     | {
         text?: string | null;
@@ -193,6 +214,10 @@ export interface Product {
     | {
         name: string;
         price: number;
+        /**
+         * One-line tier description, e.g. "Core performance bundle (VTX not included)".
+         */
+        description?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -203,7 +228,19 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
-  image?: (number | null) | Media;
+  /**
+   * Default image for this product — shown on shop cards, the featured carousel, the cart, and as the product page fallback when there are no gallery images.
+   */
+  heroImage?: (number | null) | Media;
+  /**
+   * Product photos shown in the hero gallery beside the name and description.
+   */
+  galleryImages?:
+    | {
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -393,6 +430,21 @@ export interface ProductsSelect<T extends boolean = true> {
   tagline?: T;
   basePrice?: T;
   description?: T;
+  heroDescription?: T;
+  downloadFiles?:
+    | T
+    | {
+        label?: T;
+        file?: T;
+        id?: T;
+      };
+  useCases?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
   badges?:
     | T
     | {
@@ -404,6 +456,7 @@ export interface ProductsSelect<T extends boolean = true> {
     | {
         name?: T;
         price?: T;
+        description?: T;
         id?: T;
       };
   techSpecs?:
@@ -413,7 +466,13 @@ export interface ProductsSelect<T extends boolean = true> {
         value?: T;
         id?: T;
       };
-  image?: T;
+  heroImage?: T;
+  galleryImages?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

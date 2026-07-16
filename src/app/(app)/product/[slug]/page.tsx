@@ -1,6 +1,5 @@
 import { ProductHero } from "@/components/product/product-hero";
 import { ProductTabs } from "@/components/product/product-tabs";
-import { StickyBuyBar } from "@/components/product/sticky-buy-bar";
 import { notFound } from "next/navigation";
 import { getPayload } from "payload";
 import config from "@payload-config";
@@ -30,10 +29,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background">
       <ProductHero product={product} />
       <ProductTabs product={product} />
-      <StickyBuyBar product={product} />
     </div>
   );
 }

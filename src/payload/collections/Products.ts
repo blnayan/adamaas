@@ -15,11 +15,21 @@ function revalidateShopPaths(doc: Product) {
   revalidatePath("/shop/[page]", "page");
 }
 
-const revalidateAfterChange: CollectionAfterChangeHook<Product> = ({ doc }) =>
-  revalidateShopPaths(doc);
+// Scripts run outside a Next request, where revalidatePath throws — they
+// opt out by passing `context: { disableRevalidate: true }`.
+const revalidateAfterChange: CollectionAfterChangeHook<Product> = ({
+  doc,
+  req,
+}) => {
+  if (!req.context?.disableRevalidate) revalidateShopPaths(doc);
+};
 
-const revalidateAfterDelete: CollectionAfterDeleteHook<Product> = ({ doc }) =>
-  revalidateShopPaths(doc);
+const revalidateAfterDelete: CollectionAfterDeleteHook<Product> = ({
+  doc,
+  req,
+}) => {
+  if (!req.context?.disableRevalidate) revalidateShopPaths(doc);
+};
 
 export const Products: CollectionConfig = {
   slug: "products",
@@ -72,6 +82,52 @@ export const Products: CollectionConfig = {
       required: true,
     },
     {
+      name: "heroDescription",
+      type: "textarea",
+      admin: {
+        description: "Short punchy copy shown in the hero under the tagline.",
+      },
+    },
+    {
+      name: "downloadFiles",
+      type: "array",
+      label: "Download Files",
+      admin: {
+        description:
+          "Open-source files offered for direct download on the product's Downloads tab.",
+      },
+      fields: [
+        {
+          name: "label",
+          type: "text",
+          required: true,
+        },
+        {
+          name: "file",
+          type: "upload",
+          relationTo: "media",
+          required: true,
+        },
+      ],
+    },
+    {
+      name: "useCases",
+      type: "array",
+      label: "Use Cases",
+      fields: [
+        {
+          name: "title",
+          type: "text",
+          required: true,
+        },
+        {
+          name: "description",
+          type: "textarea",
+          required: true,
+        },
+      ],
+    },
+    {
       name: "badges",
       type: "array",
       label: "Badges",
@@ -99,6 +155,14 @@ export const Products: CollectionConfig = {
           required: true,
           min: 0,
         },
+        {
+          name: "description",
+          type: "text",
+          admin: {
+            description:
+              'One-line tier description, e.g. "Core performance bundle (VTX not included)".',
+          },
+        },
       ],
     },
     {
@@ -119,9 +183,31 @@ export const Products: CollectionConfig = {
       ],
     },
     {
-      name: "image",
+      name: "heroImage",
       type: "upload",
       relationTo: "media",
+      label: "Hero Image",
+      admin: {
+        description:
+          "Default image for this product — shown on shop cards, the featured carousel, the cart, and as the product page fallback when there are no gallery images.",
+      },
+    },
+    {
+      name: "galleryImages",
+      type: "array",
+      label: "Gallery Images",
+      admin: {
+        description:
+          "Product photos shown in the hero gallery beside the name and description.",
+      },
+      fields: [
+        {
+          name: "image",
+          type: "upload",
+          relationTo: "media",
+          required: true,
+        },
+      ],
     },
   ],
 };

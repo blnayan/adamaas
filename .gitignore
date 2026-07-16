@@ -44,3 +44,6 @@ seed.ts
 
 # playwright mcp artifacts
 .playwright-mcp/
+
+# payload local upload storage (prod uses Vercel Blob)
+/media/

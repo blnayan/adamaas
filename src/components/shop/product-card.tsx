@@ -27,7 +27,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const [selectedVariant, setSelectedVariant] = useState<Variant | undefined>(
     product.variants?.[0],
   );
-  const image = resolveImage(product.image, product.name);
+  const image = resolveImage(product.heroImage, product.name);
 
   return (
     <Card className="h-full border-border bg-card flex flex-col overflow-hidden hover:border-primary/50 transition-colors group">

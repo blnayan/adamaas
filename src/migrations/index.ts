@@ -2,6 +2,9 @@ import * as migration_20260101_221310_initial from './20260101_221310_initial';
 import * as migration_20260105_194231_new_collection_inquiries from './20260105_194231_new_collection_inquiries';
 import * as migration_20260107_183303_inquiries_add_new_field_phone from './20260107_183303_inquiries_add_new_field_phone';
 import * as migration_20260715_183510_blogs from './20260715_183510_blogs';
+import * as migration_20260715_230806_nomad_product_fields from './20260715_230806_nomad_product_fields';
+import * as migration_20260716_003601_gallery_images from './20260716_003601_gallery_images';
+import * as migration_20260716_034047_hero_image from './20260716_034047_hero_image';
 
 export const migrations = [
   {
@@ -22,6 +25,21 @@ export const migrations = [
   {
     up: migration_20260715_183510_blogs.up,
     down: migration_20260715_183510_blogs.down,
-    name: '20260715_183510_blogs'
+    name: '20260715_183510_blogs',
+  },
+  {
+    up: migration_20260715_230806_nomad_product_fields.up,
+    down: migration_20260715_230806_nomad_product_fields.down,
+    name: '20260715_230806_nomad_product_fields',
+  },
+  {
+    up: migration_20260716_003601_gallery_images.up,
+    down: migration_20260716_003601_gallery_images.down,
+    name: '20260716_003601_gallery_images',
+  },
+  {
+    up: migration_20260716_034047_hero_image.up,
+    down: migration_20260716_034047_hero_image.down,
+    name: '20260716_034047_hero_image'
   },
 ];
