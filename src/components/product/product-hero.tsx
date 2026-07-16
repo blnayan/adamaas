@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Product } from "@/payload-types";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -39,13 +40,16 @@ export function ProductHero({ product }: ProductHeroProps) {
   const mainImage = images[selectedIndex];
 
   return (
-    <section className="container px-4 md:px-8 max-w-screen-2xl pt-28 pb-8">
+    <section className="container px-4 md:px-8 max-w-screen-2xl pt-4 md:pt-28 pb-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 items-start">
         <div className="space-y-4">
-          {/* Fixed-height canvas: images letterbox inside via object-contain,
+          {/* Fixed-ratio canvas: images letterbox inside via object-contain,
               so swapping between differently sized images never shifts the
               layout. */}
-          <div className="relative h-[400px] lg:h-[500px] w-full rounded-lg overflow-hidden bg-muted">
+          <AspectRatio
+            ratio={4 / 3}
+            className="rounded-lg overflow-hidden bg-muted"
+          >
             {mainImage && (
               <Image
                 src={mainImage.url}
@@ -56,7 +60,7 @@ export function ProductHero({ product }: ProductHeroProps) {
                 className="object-contain"
               />
             )}
-          </div>
+          </AspectRatio>
           {images.length > 1 && (
             <div className="flex flex-wrap gap-3">
               {images.map((image, i) => (
