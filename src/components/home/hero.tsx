@@ -3,14 +3,19 @@ import { Button } from "@/components/ui/button";
 
 export function Hero() {
   return (
-    <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
-      {/* Video Background Placeholder - In a real scenario, this would be a <video> element */}
-      <div className="absolute inset-0 z-0 bg-background grid place-items-center">
-        <div className="text-muted-foreground font-bold text-9xl opacity-20 select-none">
-          VIDEO
-        </div>
+    // offset matches the navbar: h-16 (4rem) plus its 1px bottom border
+    <section className="relative min-h-[calc(100svh-4rem-1px)] w-full overflow-hidden flex items-center justify-center">
+      <div className="absolute inset-0 z-0 bg-background">
+        <video
+          className="h-full w-full object-cover"
+          src="/hero-background.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
         {/* Overlay gradient to ensure text readability */}
-        <div className="absolute inset-0 bg-background/40" />
+        <div className="absolute inset-0 bg-background/75" />
       </div>
 
       <div className="relative z-10 container px-4 md:px-6 flex flex-col items-center text-center space-y-8">
