@@ -14,9 +14,18 @@ refuses to start twice — check first instead of launching your own):
 curl -s -o /dev/null -w "%{http_code}" http://localhost:3000
 ```
 
-If nothing is running: `bun run dev` (background). `.env` at the repo root
-supplies the local Postgres connection. Local DB is dev-push — never run
-`payload migrate` locally.
+If nothing is running: `bun run dev` (background). `.env.local` at the repo
+root supplies the local Postgres connection (there is no `.env`; `payload run`
+scripts only read `.env`, so temp-symlink it: `ln -sf .env.local .env`, run,
+`rm .env`). Local DB is dev-push — never run `payload migrate` locally.
+
+Gotcha: `next build` / `next start` run with NODE_ENV=production, which loads
+`.env.production.local` (real production credentials) at HIGHER precedence
+than `.env.local`. Before a local prod-mode session, move it away
+(`mv .env.production.local /tmp/...`) and restore it after — otherwise the
+build prerenders from, and the server mutates, the production Neon DB. Verify
+which DB a prod-mode server is on before writing:
+`curl -s localhost:3000/api/products?limit=10` (local DB has extra test docs).
 
 ## Drive
 
