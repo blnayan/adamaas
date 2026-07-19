@@ -119,6 +119,15 @@ export const Products: CollectionConfig = {
       ],
     },
     {
+      name: "flightFootageUrl",
+      type: "text",
+      label: "Flight Footage URL",
+      admin: {
+        description:
+          "YouTube link (watch, share, or Shorts URL) shown as an embed on the product's Flight Footage tab. Leave empty to hide the tab.",
+      },
+    },
+    {
       name: "useCases",
       type: "array",
       label: "Use Cases",

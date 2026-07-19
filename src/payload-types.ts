@@ -197,6 +197,10 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
+  /**
+   * YouTube link (watch, share, or Shorts URL) shown as an embed on the product's Flight Footage tab. Leave empty to hide the tab.
+   */
+  flightFootageUrl?: string | null;
   useCases?:
     | {
         title: string;
@@ -442,6 +446,7 @@ export interface ProductsSelect<T extends boolean = true> {
         file?: T;
         id?: T;
       };
+  flightFootageUrl?: T;
   useCases?:
     | T
     | {

@@ -10,9 +10,44 @@ describe("ProductTabs", () => {
     expect(screen.queryByRole("tab", { name: "Gallery" })).not.toBeInTheDocument();
     expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual([
       "Overview",
-      "Flight Footage",
       "Downloads",
     ]);
+  });
+
+  it("hides the Flight Footage tab when the product has no footage", () => {
+    render(<ProductTabs product={makeProduct()} />);
+    expect(
+      screen.queryByRole("tab", { name: "Flight Footage" }),
+    ).not.toBeInTheDocument();
+  });
+
+  describe("flight footage tab", () => {
+    it("embeds the product's YouTube video", async () => {
+      const user = userEvent.setup();
+      render(
+        <ProductTabs
+          product={makeProduct({
+            flightFootageUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          })}
+        />,
+      );
+
+      await user.click(screen.getByRole("tab", { name: "Flight Footage" }));
+
+      expect(screen.getByTitle("Flight footage")).toHaveAttribute(
+        "src",
+        "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+      );
+    });
+
+    it("hides the tab when the URL is not a recognizable video link", () => {
+      render(
+        <ProductTabs product={makeProduct({ flightFootageUrl: "not a url" })} />,
+      );
+      expect(
+        screen.queryByRole("tab", { name: "Flight Footage" }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   describe("use cases", () => {

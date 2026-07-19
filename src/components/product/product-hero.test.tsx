@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Product } from "@/payload-types";
+import { CartSheet } from "@/components/layout/cart-sheet";
+import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/lib/cart-context";
 import { getCartSnapshot, resetCartForTests } from "@/lib/cart/store";
 import { makeMedia, makeProduct } from "@/lib/cart/test-helpers";
@@ -139,6 +141,33 @@ describe("ProductHero", () => {
     expect(screen.getByText("Silent cruiser")).toBeInTheDocument();
   });
 
+  describe("badges", () => {
+    it("shows each badge as a chip", () => {
+      renderHero(
+        makeProduct({
+          badges: [{ text: "New" }, { text: "Best Seller" }],
+        }),
+      );
+      const list = screen.getByRole("list", { name: "Badges" });
+      expect(list).toHaveTextContent("New");
+      expect(list).toHaveTextContent("Best Seller");
+    });
+
+    it("omits the badge list when the product has none", () => {
+      renderHero(makeProduct());
+      expect(
+        screen.queryByRole("list", { name: "Badges" }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("skips badge rows with no text", () => {
+      renderHero(makeProduct({ badges: [{ text: null }] }));
+      expect(
+        screen.queryByRole("list", { name: "Badges" }),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   it("shows the hero description when the product has one", () => {
     renderHero(
       makeProduct({ heroDescription: "18650-powered, low-profile PCTG frame." }),
@@ -235,6 +264,26 @@ describe("ProductHero", () => {
         name: "Full Kit",
         price: 269,
       });
+    });
+
+    it("offers a View cart action on the added-to-cart toast", async () => {
+      const user = userEvent.setup();
+      render(
+        <CartProvider>
+          <ProductHero product={makeProduct()} />
+          <CartSheet>
+            <button type="button">cart trigger</button>
+          </CartSheet>
+          <Toaster />
+        </CartProvider>,
+      );
+
+      await user.click(screen.getByRole("button", { name: "Add to Cart" }));
+      await user.click(
+        await screen.findByRole("button", { name: "View cart" }),
+      );
+
+      expect(await screen.findByText("Your Cart (1)")).toBeInTheDocument();
     });
 
     it("uses the base price and no variant when the product has none", async () => {

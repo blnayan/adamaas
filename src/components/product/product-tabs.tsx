@@ -11,7 +11,9 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { resolveFileUrl } from "@/lib/media";
+import { youTubeEmbedUrl } from "@/lib/video";
 
 interface ProductTabsProps {
   product: Product;
@@ -25,18 +27,31 @@ export function ProductTabs({ product }: ProductTabsProps) {
     return url ? [{ id: entry.id, label: entry.label, url }] : [];
   });
 
+  // Unset or unrecognizable footage URLs hide the tab entirely rather than
+  // rendering a broken embed.
+  const footageEmbedUrl = product.flightFootageUrl
+    ? youTubeEmbedUrl(product.flightFootageUrl)
+    : null;
+
   return (
     <section className="container px-4 md:px-8 max-w-screen-2xl py-12">
       <Tabs defaultValue="overview" className="w-full">
         {/* The list's default height uses this group-data variant, so a plain
             h-auto never replaces it in tailwind-merge — match the variant. */}
-        <TabsList className="grid w-full grid-cols-3 group-data-[orientation=horizontal]/tabs:h-auto">
+        <TabsList
+          className={cn(
+            "grid w-full group-data-[orientation=horizontal]/tabs:h-auto",
+            footageEmbedUrl ? "grid-cols-3" : "grid-cols-2",
+          )}
+        >
           <TabsTrigger value="overview" className="h-12 text-base">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="footage" className="h-12 text-base">
-            Flight Footage
-          </TabsTrigger>
+          {footageEmbedUrl && (
+            <TabsTrigger value="footage" className="h-12 text-base">
+              Flight Footage
+            </TabsTrigger>
+          )}
           <TabsTrigger value="downloads" className="h-12 text-base">
             Downloads
           </TabsTrigger>
@@ -107,13 +122,19 @@ export function ProductTabs({ product }: ProductTabsProps) {
 
         </TabsContent>
 
-        <TabsContent value="footage" className="mt-8">
-          <div className="aspect-video bg-black rounded-lg grid place-items-center border border-zinc-800">
-            <span className="text-white text-xl">
-              Cinematic Flight Footage Embed
-            </span>
-          </div>
-        </TabsContent>
+        {footageEmbedUrl && (
+          <TabsContent value="footage" className="mt-8">
+            <div className="aspect-video rounded-lg overflow-hidden bg-black">
+              <iframe
+                src={footageEmbedUrl}
+                title="Flight footage"
+                className="h-full w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </TabsContent>
+        )}
 
         <TabsContent value="downloads" className="mt-8">
           {downloads.length > 0 ? (

@@ -62,7 +62,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addItem = useCallback((product: Product, variant?: Variant) => {
     addToCart(product, variant);
-    toast.success(`Added ${product.name} to cart`);
+    toast.success(`Added ${product.name} to cart`, {
+      action: {
+        label: "View cart",
+        onClick: () => setIsOpen(true),
+      },
+    });
   }, []);
 
   const value = useMemo(

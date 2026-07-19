@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { Product } from "@/payload-types";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -39,6 +40,9 @@ export function ProductHero({ product }: ProductHeroProps) {
       : [resolveImageOrFallback(product.heroImage, product.name)];
   const [selectedIndex, setSelectedIndex] = useState(0);
   const mainImage = images[selectedIndex];
+  const badges = (product.badges ?? []).flatMap((badge) =>
+    badge.text ? [{ id: badge.id, text: badge.text }] : [],
+  );
 
   return (
     <section className="container px-4 md:px-8 max-w-screen-2xl pt-4 md:pt-28 pb-8">
@@ -90,6 +94,15 @@ export function ProductHero({ product }: ProductHeroProps) {
         </div>
 
         <div className="space-y-4 md:py-8">
+          {badges.length > 0 && (
+            <ul aria-label="Badges" className="flex flex-wrap gap-2">
+              {badges.map(({ id, text }) => (
+                <li key={id ?? text}>
+                  <Badge variant="secondary">{text}</Badge>
+                </li>
+              ))}
+            </ul>
+          )}
           <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground">
             {product.name}
           </h1>

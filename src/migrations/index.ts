@@ -6,6 +6,7 @@ import * as migration_20260715_230806_nomad_product_fields from './20260715_2308
 import * as migration_20260716_003601_gallery_images from './20260716_003601_gallery_images';
 import * as migration_20260716_034047_hero_image from './20260716_034047_hero_image';
 import * as migration_20260719_195952_variant_images_default from './20260719_195952_variant_images_default';
+import * as migration_20260719_213541_flight_footage_url from './20260719_213541_flight_footage_url';
 
 export const migrations = [
   {
@@ -46,6 +47,11 @@ export const migrations = [
   {
     up: migration_20260719_195952_variant_images_default.up,
     down: migration_20260719_195952_variant_images_default.down,
-    name: '20260719_195952_variant_images_default'
+    name: '20260719_195952_variant_images_default',
+  },
+  {
+    up: migration_20260719_213541_flight_footage_url.up,
+    down: migration_20260719_213541_flight_footage_url.down,
+    name: '20260719_213541_flight_footage_url'
   },
 ];

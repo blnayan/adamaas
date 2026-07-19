@@ -1,17 +1,19 @@
 import { ProductHero } from "@/components/product/product-hero";
 import { ProductTabs } from "@/components/product/product-tabs";
+import { productJsonLd, productMetadata } from "@/lib/product-metadata";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPayload } from "payload";
+import { cache } from "react";
 import config from "@payload-config";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export default async function ProductPage({ params }: ProductPageProps) {
-  const { slug } = await params;
+// cache() dedupes the query between generateMetadata and the page render.
+const getProductBySlug = cache(async (slug: string) => {
   const payload = await getPayload({ config });
-
   const { docs } = await payload.find({
     collection: "products",
     where: {
@@ -21,8 +23,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
     },
     limit: 1,
   });
+  return docs[0];
+});
 
-  const product = docs[0];
+export async function generateMetadata({
+  params,
+}: ProductPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
+  return product ? productMetadata(product) : {};
+}
+
+export default async function ProductPage({ params }: ProductPageProps) {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();
@@ -30,6 +44,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productJsonLd(product)),
+        }}
+      />
       <ProductHero product={product} />
       <ProductTabs product={product} />
     </div>
