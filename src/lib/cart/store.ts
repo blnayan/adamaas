@@ -1,4 +1,5 @@
 import type { Product } from "@/payload-types";
+import { payloadSdk } from "@/lib/payload-sdk";
 import {
   type CartItem,
   type Variant,
@@ -73,12 +74,11 @@ export async function reconcileWithCatalog(): Promise<boolean> {
 
   const ids = [...new Set(current.map((item) => item.product.id))];
   try {
-    const response = await fetch(
-      `/api/products?where[id][in]=${ids.join(",")}&limit=${ids.length}`,
-    );
-    if (!response.ok) return false;
-
-    const { docs } = (await response.json()) as { docs: Product[] };
+    const { docs } = await payloadSdk.find({
+      collection: "products",
+      where: { id: { in: ids } },
+      limit: ids.length,
+    });
     const { items: next, changed } = reconcileCart(current, docs);
     if (changed) write(next);
     return changed;
