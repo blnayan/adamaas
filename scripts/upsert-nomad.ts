@@ -142,6 +142,7 @@ const nomad = {
       price: 269,
       description:
         "PCTG frame, electronics + battery (VTX not included)",
+      isDefault: true,
     },
     {
       name: "Ultimate Long-Range Bundle",

@@ -17,6 +17,7 @@ import {
 import { Product } from "@/payload-types";
 import { useCart, Variant } from "@/lib/cart-context";
 import { resolveImage } from "@/lib/media";
+import { getDefaultVariant } from "@/lib/products";
 
 interface ProductCardProps {
   product: Product;
@@ -27,7 +28,7 @@ interface ProductCardProps {
 export function ProductCard({ product, priority = false }: ProductCardProps) {
   const { addItem } = useCart();
   const [selectedVariant, setSelectedVariant] = useState<Variant | undefined>(
-    product.variants?.[0],
+    getDefaultVariant(product),
   );
   const image = resolveImage(product.heroImage, product.name);
 

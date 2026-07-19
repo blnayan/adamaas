@@ -151,6 +151,16 @@ export const Products: CollectionConfig = {
       name: "variants",
       type: "array",
       label: "Variants",
+      validate: (value: unknown) => {
+        const rows = Array.isArray(value) ? value : [];
+        const defaults = rows.filter(
+          (row) => (row as { isDefault?: boolean } | null)?.isDefault,
+        );
+        return (
+          defaults.length <= 1 ||
+          "Only one variant can be marked as the default selection."
+        );
+      },
       fields: [
         {
           name: "name",
@@ -170,6 +180,33 @@ export const Products: CollectionConfig = {
             description:
               'One-line tier description, e.g. "Core performance bundle (VTX not included)".',
           },
+        },
+        {
+          name: "isDefault",
+          type: "checkbox",
+          label: "Default selection",
+          defaultValue: false,
+          admin: {
+            description:
+              "Preselect this variant on the product page and shop card. Check at most one.",
+          },
+        },
+        {
+          name: "images",
+          type: "array",
+          label: "Images",
+          admin: {
+            description:
+              "Gallery photos shown while this variant is selected. Falls back to the hero image when empty.",
+          },
+          fields: [
+            {
+              name: "image",
+              type: "upload",
+              relationTo: "media",
+              required: true,
+            },
+          ],
         },
       ],
     },
@@ -197,25 +234,8 @@ export const Products: CollectionConfig = {
       label: "Hero Image",
       admin: {
         description:
-          "Default image for this product — shown on shop cards, the featured carousel, the cart, and as the product page fallback when there are no gallery images.",
+          "Default image for this product — shown on shop cards, the featured carousel, the cart, and as the product page fallback when the selected variant has no images.",
       },
-    },
-    {
-      name: "galleryImages",
-      type: "array",
-      label: "Gallery Images",
-      admin: {
-        description:
-          "Product photos shown in the hero gallery beside the name and description.",
-      },
-      fields: [
-        {
-          name: "image",
-          type: "upload",
-          relationTo: "media",
-          required: true,
-        },
-      ],
     },
   ],
 };

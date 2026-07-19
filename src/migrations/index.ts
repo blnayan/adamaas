@@ -5,6 +5,7 @@ import * as migration_20260715_183510_blogs from './20260715_183510_blogs';
 import * as migration_20260715_230806_nomad_product_fields from './20260715_230806_nomad_product_fields';
 import * as migration_20260716_003601_gallery_images from './20260716_003601_gallery_images';
 import * as migration_20260716_034047_hero_image from './20260716_034047_hero_image';
+import * as migration_20260719_195952_variant_images_default from './20260719_195952_variant_images_default';
 
 export const migrations = [
   {
@@ -40,6 +41,11 @@ export const migrations = [
   {
     up: migration_20260716_034047_hero_image.up,
     down: migration_20260716_034047_hero_image.down,
-    name: '20260716_034047_hero_image'
+    name: '20260716_034047_hero_image',
+  },
+  {
+    up: migration_20260719_195952_variant_images_default.up,
+    down: migration_20260719_195952_variant_images_default.down,
+    name: '20260719_195952_variant_images_default'
   },
 ];

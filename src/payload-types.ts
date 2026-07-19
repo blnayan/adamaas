@@ -218,6 +218,19 @@ export interface Product {
          * One-line tier description, e.g. "Core performance bundle (VTX not included)".
          */
         description?: string | null;
+        /**
+         * Preselect this variant on the product page and shop card. Check at most one.
+         */
+        isDefault?: boolean | null;
+        /**
+         * Gallery photos shown while this variant is selected. Falls back to the hero image when empty.
+         */
+        images?:
+          | {
+              image: number | Media;
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
       }[]
     | null;
@@ -229,18 +242,9 @@ export interface Product {
       }[]
     | null;
   /**
-   * Default image for this product — shown on shop cards, the featured carousel, the cart, and as the product page fallback when there are no gallery images.
+   * Default image for this product — shown on shop cards, the featured carousel, the cart, and as the product page fallback when the selected variant has no images.
    */
   heroImage?: (number | null) | Media;
-  /**
-   * Product photos shown in the hero gallery beside the name and description.
-   */
-  galleryImages?:
-    | {
-        image: number | Media;
-        id?: string | null;
-      }[]
-    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -457,6 +461,13 @@ export interface ProductsSelect<T extends boolean = true> {
         name?: T;
         price?: T;
         description?: T;
+        isDefault?: T;
+        images?:
+          | T
+          | {
+              image?: T;
+              id?: T;
+            };
         id?: T;
       };
   techSpecs?:
@@ -467,12 +478,6 @@ export interface ProductsSelect<T extends boolean = true> {
         id?: T;
       };
   heroImage?: T;
-  galleryImages?:
-    | T
-    | {
-        image?: T;
-        id?: T;
-      };
   updatedAt?: T;
   createdAt?: T;
 }

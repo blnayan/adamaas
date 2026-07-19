@@ -17,12 +17,18 @@ function renderHero(product: Product) {
 }
 
 describe("ProductHero", () => {
-  it("shows the first gallery image, without the video placeholder", () => {
+  it("shows the selected variant's first image, without the video placeholder", () => {
     renderHero(
       makeProduct({
-        galleryImages: [
-          { image: makeMedia({ id: 1, alt: "Front view", url: "/media/front.jpg" }) },
-          { image: makeMedia({ id: 2, alt: "Side view", url: "/media/side.jpg" }) },
+        variants: [
+          {
+            name: "Full Kit",
+            price: 269,
+            images: [
+              { image: makeMedia({ id: 1, alt: "Front view", url: "/media/front.jpg" }) },
+              { image: makeMedia({ id: 2, alt: "Side view", url: "/media/side.jpg" }) },
+            ],
+          },
         ],
       }),
     );
@@ -34,9 +40,15 @@ describe("ProductHero", () => {
     const user = userEvent.setup();
     renderHero(
       makeProduct({
-        galleryImages: [
-          { image: makeMedia({ id: 1, alt: "Front view", url: "/media/front.jpg" }) },
-          { image: makeMedia({ id: 2, alt: "Side view", url: "/media/side.jpg" }) },
+        variants: [
+          {
+            name: "Full Kit",
+            price: 269,
+            images: [
+              { image: makeMedia({ id: 1, alt: "Front view", url: "/media/front.jpg" }) },
+              { image: makeMedia({ id: 2, alt: "Side view", url: "/media/side.jpg" }) },
+            ],
+          },
         ],
       }),
     );
@@ -52,10 +64,60 @@ describe("ProductHero", () => {
     expect(screen.getAllByAltText("Front view")).toHaveLength(1);
   });
 
+  it("swaps the gallery and resets the thumbnail selection when the variant changes", async () => {
+    const user = userEvent.setup();
+    renderHero(
+      makeProduct({
+        variants: [
+          {
+            name: "Frame Pack",
+            price: 29,
+            images: [
+              { image: makeMedia({ id: 1, alt: "Frame front", url: "/media/frame-front.jpg" }) },
+              { image: makeMedia({ id: 2, alt: "Frame side", url: "/media/frame-side.jpg" }) },
+            ],
+          },
+          {
+            name: "Full Kit",
+            price: 269,
+            images: [
+              { image: makeMedia({ id: 3, alt: "Kit front", url: "/media/kit-front.jpg" }) },
+              { image: makeMedia({ id: 4, alt: "Kit side", url: "/media/kit-side.jpg" }) },
+            ],
+          },
+        ],
+      }),
+    );
+
+    // Move off the first thumbnail so the reset is observable.
+    await user.click(screen.getByRole("button", { name: "Frame side" }));
+    expect(screen.getAllByAltText("Frame side")).toHaveLength(2);
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByRole("option", { name: "Full Kit" }));
+
+    // New variant's first image is the main image again (index reset):
+    // without the reset, index 1 would make "Kit side" the main image.
+    expect(screen.getAllByAltText("Kit front")).toHaveLength(2);
+    expect(screen.getAllByAltText("Kit side")).toHaveLength(1);
+    expect(screen.queryByAltText("Frame front")).not.toBeInTheDocument();
+    expect(screen.queryByAltText("Frame side")).not.toBeInTheDocument();
+  });
+
   it("falls back to the hero image when there are no gallery images", () => {
     renderHero(
       makeProduct({
         heroImage: makeMedia({ alt: "Nomad hero shot", url: "/media/nomad.jpg" }),
+      }),
+    );
+    expect(screen.getByAltText("Nomad hero shot")).toBeInTheDocument();
+  });
+
+  it("falls back to the hero image when the selected variant has no images", () => {
+    renderHero(
+      makeProduct({
+        heroImage: makeMedia({ alt: "Nomad hero shot", url: "/media/nomad.jpg" }),
+        variants: [{ name: "Frame Pack", price: 29 }],
       }),
     );
     expect(screen.getByAltText("Nomad hero shot")).toBeInTheDocument();
@@ -109,6 +171,47 @@ describe("ProductHero", () => {
       expect(cart).toHaveLength(1);
       expect(cart[0].product.id).toBe(product.id);
       expect(cart[0].variant?.name).toBe("Frame Pack");
+    });
+
+    it("preselects the variant flagged as default in the admin", async () => {
+      const user = userEvent.setup();
+      const product = makeProduct({
+        variants: [
+          { name: "Frame Pack", price: 29 },
+          { name: "Full Kit", price: 269, isDefault: true },
+        ],
+      });
+      renderHero(product);
+
+      expect(screen.getByText("$269.00")).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: "Add to Cart" }));
+
+      expect(getCartSnapshot()[0].variant?.name).toBe("Full Kit");
+    });
+
+    it("shows the selected variant's description under the selector", async () => {
+      const user = userEvent.setup();
+      renderHero(
+        makeProduct({
+          variants: [
+            {
+              name: "Frame Pack",
+              price: 29,
+              description: "Printed frame parts only.",
+            },
+            { name: "Full Kit", price: 269 },
+          ],
+        }),
+      );
+
+      expect(screen.getByText("Printed frame parts only.")).toBeInTheDocument();
+
+      // Full Kit has no description — the line disappears.
+      await user.click(screen.getByRole("combobox"));
+      await user.click(screen.getByRole("option", { name: "Full Kit" }));
+      expect(
+        screen.queryByText("Printed frame parts only."),
+      ).not.toBeInTheDocument();
     });
 
     it("adds the variant picked in the selector, at its price", async () => {

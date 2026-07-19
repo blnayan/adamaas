@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { formatUsd } from "@/lib/format";
 import { resolveImage, resolveImageOrFallback } from "@/lib/media";
+import { getDefaultVariant } from "@/lib/products";
 import { useCart, Variant } from "@/lib/cart-context";
 
 interface ProductHeroProps {
@@ -24,17 +25,17 @@ interface ProductHeroProps {
 export function ProductHero({ product }: ProductHeroProps) {
   const { addItem } = useCart();
   const [selectedVariant, setSelectedVariant] = useState<Variant | undefined>(
-    product.variants?.[0],
+    getDefaultVariant(product),
   );
-  const galleryImages = (product.galleryImages ?? []).flatMap((entry) => {
+  const variantImages = (selectedVariant?.images ?? []).flatMap((entry) => {
     const image = resolveImage(entry.image, product.name);
     return image ? [image] : [];
   });
-  // No gallery yet? Fall back to the product's hero image, then the site
-  // logo, so the hero never renders an empty frame.
+  // Variant without photos yet? Fall back to the product's hero image, then
+  // the site logo, so the hero never renders an empty frame.
   const images =
-    galleryImages.length > 0
-      ? galleryImages
+    variantImages.length > 0
+      ? variantImages
       : [resolveImageOrFallback(product.heroImage, product.name)];
   const [selectedIndex, setSelectedIndex] = useState(0);
   const mainImage = images[selectedIndex];
@@ -106,24 +107,36 @@ export function ProductHero({ product }: ProductHeroProps) {
               {formatUsd(selectedVariant?.price ?? product.basePrice)}
             </div>
             {product.variants && product.variants.length > 0 && (
-              <Select
-                value={selectedVariant?.name}
-                onValueChange={(val) => {
-                  const variant = product.variants?.find((v) => v.name === val);
-                  if (variant) setSelectedVariant(variant);
-                }}
-              >
-                <SelectTrigger className="w-full bg-input border-input">
-                  <SelectValue placeholder="Select variant" />
-                </SelectTrigger>
-                <SelectContent>
-                  {product.variants.map((variant) => (
-                    <SelectItem key={variant.id} value={variant.name}>
-                      {variant.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <Select
+                  value={selectedVariant?.name}
+                  onValueChange={(val) => {
+                    const variant = product.variants?.find(
+                      (v) => v.name === val,
+                    );
+                    if (variant) {
+                      setSelectedVariant(variant);
+                      setSelectedIndex(0);
+                    }
+                  }}
+                >
+                  <SelectTrigger className="w-full bg-input border-input">
+                    <SelectValue placeholder="Select variant" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {product.variants.map((variant) => (
+                      <SelectItem key={variant.id} value={variant.name}>
+                        {variant.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {selectedVariant?.description && (
+                  <p className="text-sm text-muted-foreground">
+                    {selectedVariant.description}
+                  </p>
+                )}
+              </div>
             )}
             <Button
               size="lg"

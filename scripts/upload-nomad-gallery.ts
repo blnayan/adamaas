@@ -1,8 +1,8 @@
 /**
  * One-off content load for the ADAMAAS Nomad gallery images, from the
  * client's photos (July 2026). Idempotent: media that was already uploaded
- * (matched by filename) is reused, and the product's gallery is reset to
- * exactly these images in this order.
+ * (matched by filename) is reused, and the default variant's gallery is
+ * reset to exactly these images in this order.
  *
  * Run with: bunx payload run scripts/upload-nomad-gallery.ts
  */
@@ -76,10 +76,19 @@ const nomad = (
 ).docs[0];
 if (!nomad) throw new Error('product "nomad" not found — run upsert-nomad.ts first');
 
-const galleryImages = [];
+const images: { image: number }[] = [];
 for (const entry of GALLERY) {
-  galleryImages.push({ image: await uploadImage(payload, entry) });
+  images.push({ image: await uploadImage(payload, entry) });
 }
+
+// Galleries live on variants now — attach the photos to the default
+// variant (the one preselected on the product page).
+const targetName =
+  nomad.variants?.find((v) => v.isDefault)?.name ?? nomad.variants?.[0]?.name;
+if (!targetName) throw new Error('product "nomad" has no variants');
+const variants = nomad.variants!.map((variant) =>
+  variant.name === targetName ? { ...variant, images } : variant,
+);
 
 // Outside a Next request revalidatePath would throw — skip it; the dev
 // server / next build will render fresh data anyway.
@@ -87,12 +96,12 @@ await payload.update({
   collection: "products",
   id: nomad.id,
   // The first gallery photo doubles as the hero image shown on shop
-  // cards and the featured carousel.
-  data: { galleryImages, heroImage: galleryImages[0].image },
+  // cards, the featured carousel, and image-less variants.
+  data: { variants, heroImage: images[0].image },
   context: { disableRevalidate: true },
 });
 payload.logger.info(
-  `set ${galleryImages.length} gallery images + hero image on "nomad"`,
+  `set ${images.length} images on variant "${targetName}" + hero image on "nomad"`,
 );
 
 process.exit(0);
