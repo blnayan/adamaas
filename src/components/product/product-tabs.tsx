@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
-import { formatUsd } from "@/lib/format";
 import { resolveFileUrl } from "@/lib/media";
 
 interface ProductTabsProps {
@@ -106,32 +105,6 @@ export function ProductTabs({ product }: ProductTabsProps) {
             </div>
           )}
 
-          {product.variants && product.variants.length > 0 && (
-            <div className="mt-12">
-              <h3 className="text-2xl font-bold mb-6 text-center">
-                Pricing Options
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {product.variants.map((variant, i) => (
-                  <Card key={i} className="bg-card border-border text-center">
-                    <CardContent className="p-6 flex flex-col items-center justify-center h-full">
-                      <div className="font-bold text-lg mb-2">
-                        {variant.name}
-                      </div>
-                      <div className="text-3xl font-bold text-primary mb-2">
-                        {formatUsd(variant.price)}
-                      </div>
-                      {variant.description && (
-                        <p className="text-sm text-muted-foreground">
-                          {variant.description}
-                        </p>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
         </TabsContent>
 
         <TabsContent value="footage" className="mt-8">

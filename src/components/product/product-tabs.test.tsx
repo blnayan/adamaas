@@ -38,29 +38,19 @@ describe("ProductTabs", () => {
     });
   });
 
-  describe("pricing options", () => {
-    it("shows each tier with a formatted price and its description", () => {
-      render(
-        <ProductTabs
-          product={makeProduct({
-            variants: [
-              {
-                name: "Electronics Kit",
-                price: 199,
-                description: "Core performance bundle (VTX not included)",
-              },
-              { name: "Frame Pack", price: 29 },
-            ],
-          })}
-        />,
-      );
-      expect(screen.getByText("Electronics Kit")).toBeInTheDocument();
-      expect(screen.getByText("$199.00")).toBeInTheDocument();
-      expect(
-        screen.getByText("Core performance bundle (VTX not included)"),
-      ).toBeInTheDocument();
-      expect(screen.getByText("$29.00")).toBeInTheDocument();
-    });
+  it("has no pricing options section — variants live in the hero buy box", () => {
+    render(
+      <ProductTabs
+        product={makeProduct({
+          variants: [
+            { name: "Electronics Kit", price: 199 },
+            { name: "Frame Pack", price: 29 },
+          ],
+        })}
+      />,
+    );
+    expect(screen.queryByText("Pricing Options")).not.toBeInTheDocument();
+    expect(screen.queryByText("$199.00")).not.toBeInTheDocument();
   });
 
   describe("downloads tab", () => {
