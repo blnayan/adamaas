@@ -170,20 +170,15 @@ const existing = await payload.find({
   limit: 1,
 });
 
-// Outside a Next request revalidatePath would throw — skip it; the dev
-// server / next build will render fresh data anyway.
-const context = { disableRevalidate: true };
-
 if (existing.docs[0]) {
   await payload.update({
     collection: "products",
     id: existing.docs[0].id,
     data,
-    context,
   });
   payload.logger.info(`updated product "${nomad.slug}" (id ${existing.docs[0].id})`);
 } else {
-  const created = await payload.create({ collection: "products", data, context });
+  const created = await payload.create({ collection: "products", data });
   payload.logger.info(`created product "${nomad.slug}" (id ${created.id})`);
 }
 

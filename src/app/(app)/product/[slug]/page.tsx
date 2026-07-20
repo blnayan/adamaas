@@ -11,6 +11,10 @@ type ProductPageProps = {
   params: Promise<{ slug: string }>;
 };
 
+// Hourly ISR keeps prerendered product pages in sync with catalog changes —
+// product edits no longer revalidate pages on demand.
+export const revalidate = 3600;
+
 // cache() dedupes the query between generateMetadata and the page render.
 const getProductBySlug = cache(async (slug: string) => {
   const payload = await getPayload({ config });

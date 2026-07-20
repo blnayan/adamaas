@@ -68,13 +68,10 @@ const [glb, usdz] = [
   await uploadModel(payload, MODELS[1]),
 ];
 
-// Outside a Next request revalidatePath would throw — skip it; the dev
-// server / next build will render fresh data anyway.
 await payload.update({
   collection: "products",
   id: nomad.id,
   data: { model3d: glb, modelUsdz: usdz },
-  context: { disableRevalidate: true },
 });
 payload.logger.info('set model3d + modelUsdz on "nomad"');
 

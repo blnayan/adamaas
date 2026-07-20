@@ -3,6 +3,10 @@ import { FeaturedCarousel } from "@/components/home/featured-carousel";
 import { getPayload } from "payload";
 import config from "@payload-config";
 
+// Hourly ISR keeps the featured carousel in sync with catalog changes —
+// product edits no longer revalidate pages on demand.
+export const revalidate = 3600;
+
 export default async function Home() {
   const payload = await getPayload({ config });
   const { docs: products } = await payload.find({

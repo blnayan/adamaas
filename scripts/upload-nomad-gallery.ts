@@ -90,15 +90,12 @@ const variants = nomad.variants!.map((variant) =>
   variant.name === targetName ? { ...variant, images } : variant,
 );
 
-// Outside a Next request revalidatePath would throw — skip it; the dev
-// server / next build will render fresh data anyway.
 await payload.update({
   collection: "products",
   id: nomad.id,
   // The first gallery photo doubles as the hero image shown on shop
   // cards, the featured carousel, and image-less variants.
   data: { variants, heroImage: images[0].image },
-  context: { disableRevalidate: true },
 });
 payload.logger.info(
   `set ${images.length} images on variant "${targetName}" + hero image on "nomad"`,
