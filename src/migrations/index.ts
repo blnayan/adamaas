@@ -7,6 +7,7 @@ import * as migration_20260716_003601_gallery_images from './20260716_003601_gal
 import * as migration_20260716_034047_hero_image from './20260716_034047_hero_image';
 import * as migration_20260719_195952_variant_images_default from './20260719_195952_variant_images_default';
 import * as migration_20260719_213541_flight_footage_url from './20260719_213541_flight_footage_url';
+import * as migration_20260720_025129_product_3d_models from './20260720_025129_product_3d_models';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20260719_213541_flight_footage_url.up,
     down: migration_20260719_213541_flight_footage_url.down,
-    name: '20260719_213541_flight_footage_url'
+    name: '20260719_213541_flight_footage_url',
+  },
+  {
+    up: migration_20260720_025129_product_3d_models.up,
+    down: migration_20260720_025129_product_3d_models.down,
+    name: '20260720_025129_product_3d_models'
   },
 ];
