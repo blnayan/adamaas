@@ -249,6 +249,14 @@ export interface Product {
    * Default image for this product — shown on shop cards, the featured carousel, the cart, and as the product page fallback when the selected variant has no images.
    */
   heroImage?: (number | null) | Media;
+  /**
+   * Interactive 3D model shown as an extra slide in the product page gallery. Must be a .glb (binary glTF) file.
+   */
+  model3d?: (number | null) | Media;
+  /**
+   * Apple USDZ version of the 3D model. When set, iPhone/iPad users get an AR Quick Look button to view the product in their space.
+   */
+  modelUsdz?: (number | null) | Media;
   updatedAt: string;
   createdAt: string;
 }
@@ -483,6 +491,8 @@ export interface ProductsSelect<T extends boolean = true> {
         id?: T;
       };
   heroImage?: T;
+  model3d?: T;
+  modelUsdz?: T;
   updatedAt?: T;
   createdAt?: T;
 }

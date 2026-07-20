@@ -246,5 +246,25 @@ export const Products: CollectionConfig = {
           "Default image for this product — shown on shop cards, the featured carousel, the cart, and as the product page fallback when the selected variant has no images.",
       },
     },
+    {
+      name: "model3d",
+      type: "upload",
+      relationTo: "media",
+      label: "3D Model (GLB)",
+      admin: {
+        description:
+          "Interactive 3D model shown as an extra slide in the product page gallery. Must be a .glb (binary glTF) file.",
+      },
+    },
+    {
+      name: "modelUsdz",
+      type: "upload",
+      relationTo: "media",
+      label: "3D Model (USDZ, optional)",
+      admin: {
+        description:
+          "Apple USDZ version of the 3D model. When set, iPhone/iPad users get an AR Quick Look button to view the product in their space.",
+      },
+    },
   ],
 };

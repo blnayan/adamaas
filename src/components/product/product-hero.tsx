@@ -13,11 +13,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ImageIcon, Rotate3d } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatUsd } from "@/lib/format";
-import { resolveImage, resolveImageOrFallback } from "@/lib/media";
+import { useMediaQuery } from "@/lib/use-media-query";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import {
+  resolveFileUrl,
+  resolveImage,
+  resolveImageOrFallback,
+} from "@/lib/media";
 import { getDefaultVariant } from "@/lib/products";
 import { useCart, Variant } from "@/lib/cart-context";
+import { ModelViewer } from "./model-viewer";
 
 interface ProductHeroProps {
   product: Product;
@@ -38,7 +46,22 @@ export function ProductHero({ product }: ProductHeroProps) {
     variantImages.length > 0
       ? variantImages
       : [resolveImageOrFallback(product.heroImage, product.name)];
+  const modelSrc = resolveFileUrl(product.model3d);
+  // Shared by the inline canvas and the fullscreen dialog viewer.
+  const modelViewerProps = modelSrc
+    ? {
+        src: modelSrc,
+        iosSrc: resolveFileUrl(product.modelUsdz) ?? undefined,
+        poster: resolveImage(product.heroImage)?.url,
+        alt: `${product.name} 3D model`,
+      }
+    : undefined;
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [showModel, setShowModel] = useState(false);
+  // On phones the inline canvas is too small for orbit gestures, so the 3D
+  // toggle opens a fullscreen dialog there instead of swapping the canvas.
+  const isMobile = useMediaQuery("(max-width: 767px)");
+  const [modelDialogOpen, setModelDialogOpen] = useState(false);
   const mainImage = images[selectedIndex];
   const badges = (product.badges ?? []).flatMap((badge) =>
     badge.text ? [{ id: badge.id, text: badge.text }] : [],
@@ -55,27 +78,71 @@ export function ProductHero({ product }: ProductHeroProps) {
             ratio={4 / 3}
             className="rounded-lg overflow-hidden bg-muted"
           >
-            {mainImage && (
-              <Image
-                src={mainImage.url}
-                alt={mainImage.alt}
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-contain"
-              />
+            {showModel && modelViewerProps ? (
+              // AR stays off inline even when re-enabled elsewhere: the
+              // toggle button owns the corner the AR badge wants.
+              <ModelViewer {...modelViewerProps} ar={false} />
+            ) : (
+              mainImage && (
+                <Image
+                  src={mainImage.url}
+                  alt={mainImage.alt}
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-contain"
+                />
+              )
+            )}
+            {modelViewerProps && (
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                className="absolute bottom-3 right-3 z-10 gap-1.5 shadow-md"
+                onClick={() =>
+                  isMobile
+                    ? setModelDialogOpen(true)
+                    : setShowModel((open) => !open)
+                }
+              >
+                {showModel ? (
+                  <ImageIcon aria-hidden className="size-4" />
+                ) : (
+                  <Rotate3d aria-hidden className="size-4" />
+                )}
+                {showModel ? "View photos" : "View in 3D"}
+              </Button>
             )}
           </AspectRatio>
+          {modelViewerProps && (
+            <Dialog open={modelDialogOpen} onOpenChange={setModelDialogOpen}>
+              <DialogContent className="top-0 left-0 h-dvh w-screen max-w-none translate-x-0 translate-y-0 rounded-none border-none bg-background p-0 sm:max-w-none">
+                <DialogTitle className="sr-only">
+                  {product.name} 3D model
+                </DialogTitle>
+                {/* AR is disabled everywhere for now. */}
+                <ModelViewer
+                  {...modelViewerProps}
+                  touchAction="none"
+                  ar={false}
+                />
+              </DialogContent>
+            </Dialog>
+          )}
           {images.length > 1 && (
             <div className="flex flex-wrap gap-3">
               {images.map((image, i) => (
                 <button
                   key={image.url}
                   type="button"
-                  onClick={() => setSelectedIndex(i)}
+                  onClick={() => {
+                    setSelectedIndex(i);
+                    setShowModel(false);
+                  }}
                   className={cn(
                     "relative size-20 rounded-md overflow-hidden bg-muted border-2 transition-colors",
-                    i === selectedIndex
+                    i === selectedIndex && !showModel
                       ? "border-primary"
                       : "border-transparent hover:border-border",
                   )}
@@ -130,6 +197,7 @@ export function ProductHero({ product }: ProductHeroProps) {
                     if (variant) {
                       setSelectedVariant(variant);
                       setSelectedIndex(0);
+                      setShowModel(false);
                     }
                   }}
                 >

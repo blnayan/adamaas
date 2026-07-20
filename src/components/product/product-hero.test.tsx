@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Product } from "@/payload-types";
@@ -8,6 +8,10 @@ import { CartProvider } from "@/lib/cart-context";
 import { getCartSnapshot, resetCartForTests } from "@/lib/cart/store";
 import { makeMedia, makeProduct } from "@/lib/cart/test-helpers";
 import { ProductHero } from "./product-hero";
+
+// The real @google/model-viewer registers a WebGL custom element that jsdom
+// can't run; the <model-viewer> tag itself still renders without it.
+vi.mock("@google/model-viewer", () => ({}));
 
 // The hero's buy box uses the cart context, so every render needs a provider.
 function renderHero(product: Product) {
@@ -131,6 +135,248 @@ describe("ProductHero", () => {
       "src",
       expect.stringContaining("Adamaas_Logo"),
     );
+  });
+
+  describe("3D model view", () => {
+    it("toggles the main canvas between photos and the 3D viewer", async () => {
+      const user = userEvent.setup();
+      const { container } = renderHero(
+        makeProduct({
+          heroImage: makeMedia({ alt: "Nomad hero shot", url: "/media/nomad.jpg" }),
+          model3d: makeMedia({ id: 9, alt: "Nomad 3D model", url: "/media/nomad.glb" }),
+        }),
+      );
+
+      expect(container.querySelector("model-viewer")).not.toBeInTheDocument();
+
+      await user.click(screen.getByRole("button", { name: "View in 3D" }));
+
+      expect(container.querySelector("model-viewer")).toHaveAttribute(
+        "src",
+        "/media/nomad.glb",
+      );
+      // Inline, vertical swipes must keep scrolling the page.
+      expect(container.querySelector("model-viewer")).toHaveAttribute(
+        "touch-action",
+        "pan-y",
+      );
+      expect(screen.queryByAltText("Nomad hero shot")).not.toBeInTheDocument();
+
+      // The button flips into the way back to the photos.
+      await user.click(screen.getByRole("button", { name: "View photos" }));
+
+      expect(container.querySelector("model-viewer")).not.toBeInTheDocument();
+      expect(screen.getByAltText("Nomad hero shot")).toBeInTheDocument();
+    });
+
+    it("keeps the thumbnail rail photos-only", () => {
+      renderHero(
+        makeProduct({
+          model3d: makeMedia({ id: 9, alt: "Nomad 3D model", url: "/media/nomad.glb" }),
+          variants: [
+            {
+              name: "Full Kit",
+              price: 269,
+              images: [
+                { image: makeMedia({ id: 1, alt: "Front view", url: "/media/front.jpg" }) },
+                { image: makeMedia({ id: 2, alt: "Side view", url: "/media/side.jpg" }) },
+              ],
+            },
+          ],
+        }),
+      );
+      // Two photo thumbnails + main image + the 3D toggle — no 3D thumbnail.
+      expect(screen.getByRole("button", { name: "View in 3D" })).toBeInTheDocument();
+      expect(screen.getAllByAltText("Front view")).toHaveLength(2);
+      expect(screen.getAllByAltText("Side view")).toHaveLength(1);
+      expect(
+        screen.queryByRole("button", { name: "View 3D model" }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("returns to photos when a thumbnail is clicked while the 3D view is open", async () => {
+      const user = userEvent.setup();
+      const { container } = renderHero(
+        makeProduct({
+          model3d: makeMedia({ id: 9, alt: "Nomad 3D model", url: "/media/nomad.glb" }),
+          variants: [
+            {
+              name: "Full Kit",
+              price: 269,
+              images: [
+                { image: makeMedia({ id: 1, alt: "Front view", url: "/media/front.jpg" }) },
+                { image: makeMedia({ id: 2, alt: "Side view", url: "/media/side.jpg" }) },
+              ],
+            },
+          ],
+        }),
+      );
+
+      await user.click(screen.getByRole("button", { name: "View in 3D" }));
+      await user.click(screen.getByRole("button", { name: "Side view" }));
+
+      expect(container.querySelector("model-viewer")).not.toBeInTheDocument();
+      expect(screen.getAllByAltText("Side view")).toHaveLength(2);
+    });
+
+    it("keeps AR off the inline desktop viewer so nothing collides with the toggle", async () => {
+      const user = userEvent.setup();
+      const { container } = renderHero(
+        makeProduct({
+          model3d: makeMedia({ id: 9, alt: "Nomad 3D model", url: "/media/nomad.glb" }),
+          modelUsdz: makeMedia({ id: 10, alt: "Nomad AR model", url: "/media/nomad.usdz" }),
+        }),
+      );
+
+      await user.click(screen.getByRole("button", { name: "View in 3D" }));
+
+      const viewer = container.querySelector("model-viewer");
+      expect(viewer).not.toHaveAttribute("ar");
+      expect(viewer).not.toHaveAttribute("ios-src");
+    });
+
+    it("returns to the new variant's photos when the variant changes in 3D view", async () => {
+      const user = userEvent.setup();
+      const { container } = renderHero(
+        makeProduct({
+          model3d: makeMedia({ id: 9, alt: "Nomad 3D model", url: "/media/nomad.glb" }),
+          variants: [
+            {
+              name: "Frame Pack",
+              price: 29,
+              images: [
+                { image: makeMedia({ id: 1, alt: "Frame front", url: "/media/frame-front.jpg" }) },
+              ],
+            },
+            {
+              name: "Full Kit",
+              price: 269,
+              images: [
+                { image: makeMedia({ id: 2, alt: "Kit front", url: "/media/kit-front.jpg" }) },
+              ],
+            },
+          ],
+        }),
+      );
+
+      await user.click(screen.getByRole("button", { name: "View in 3D" }));
+      expect(container.querySelector("model-viewer")).toBeInTheDocument();
+
+      await user.click(screen.getByRole("combobox"));
+      await user.click(screen.getByRole("option", { name: "Full Kit" }));
+
+      expect(container.querySelector("model-viewer")).not.toBeInTheDocument();
+      expect(screen.getByAltText("Kit front")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "View in 3D" })).toBeInTheDocument();
+    });
+
+    describe("on a mobile viewport", () => {
+      // The setup-file matchMedia stub never matches, which reads as desktop.
+      // Simulate a phone by matching max-width queries.
+      let desktopMatchMedia: typeof window.matchMedia;
+
+      beforeEach(() => {
+        desktopMatchMedia = window.matchMedia;
+        window.matchMedia = (query: string) =>
+          ({
+            ...desktopMatchMedia(query),
+            matches: query.includes("max-width"),
+          }) as MediaQueryList;
+      });
+
+      afterEach(() => {
+        window.matchMedia = desktopMatchMedia;
+      });
+
+      it("opens the model fullscreen in a dialog, leaving the canvas on photos", async () => {
+        const user = userEvent.setup();
+        renderHero(
+          makeProduct({
+            heroImage: makeMedia({ alt: "Nomad hero shot", url: "/media/nomad.jpg" }),
+            model3d: makeMedia({ id: 9, alt: "Nomad 3D model", url: "/media/nomad.glb" }),
+          }),
+        );
+
+        await user.click(screen.getByRole("button", { name: "View in 3D" }));
+
+        const dialog = await screen.findByRole("dialog");
+        expect(dialog.querySelector("model-viewer")).toHaveAttribute(
+          "src",
+          "/media/nomad.glb",
+        );
+        // The inline canvas never swaps — the photo is still mounted behind
+        // the overlay, ready for when the dialog closes.
+        expect(screen.getByAltText("Nomad hero shot")).toBeInTheDocument();
+      });
+
+      it("claims all touch gestures for the fullscreen viewer", async () => {
+        const user = userEvent.setup();
+        renderHero(
+          makeProduct({
+            model3d: makeMedia({ id: 9, alt: "Nomad 3D model", url: "/media/nomad.glb" }),
+          }),
+        );
+
+        await user.click(screen.getByRole("button", { name: "View in 3D" }));
+
+        const dialog = await screen.findByRole("dialog");
+        // Nothing scrolls behind the overlay, so rotate/zoom own every finger.
+        expect(dialog.querySelector("model-viewer")).toHaveAttribute(
+          "touch-action",
+          "none",
+        );
+      });
+
+      it("keeps AR off the fullscreen viewer while AR is disabled", async () => {
+        const user = userEvent.setup();
+        renderHero(
+          makeProduct({
+            model3d: makeMedia({ id: 9, alt: "Nomad 3D model", url: "/media/nomad.glb" }),
+            modelUsdz: makeMedia({ id: 10, alt: "Nomad AR model", url: "/media/nomad.usdz" }),
+          }),
+        );
+
+        await user.click(screen.getByRole("button", { name: "View in 3D" }));
+
+        const dialog = await screen.findByRole("dialog");
+        const viewer = dialog.querySelector("model-viewer");
+        expect(viewer).not.toHaveAttribute("ar");
+        expect(viewer).not.toHaveAttribute("ios-src");
+      });
+
+      it("returns to the photos when the dialog is closed", async () => {
+        const user = userEvent.setup();
+        renderHero(
+          makeProduct({
+            heroImage: makeMedia({ alt: "Nomad hero shot", url: "/media/nomad.jpg" }),
+            model3d: makeMedia({ id: 9, alt: "Nomad 3D model", url: "/media/nomad.glb" }),
+          }),
+        );
+
+        await user.click(screen.getByRole("button", { name: "View in 3D" }));
+        await screen.findByRole("dialog");
+
+        await user.click(screen.getByRole("button", { name: "Close" }));
+
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+        expect(screen.getByAltText("Nomad hero shot")).toBeInTheDocument();
+        // The toggle is ready for another round.
+        expect(
+          screen.getByRole("button", { name: "View in 3D" }),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("omits the 3D button when the product has no model", () => {
+      renderHero(
+        makeProduct({
+          heroImage: makeMedia({ alt: "Nomad hero shot", url: "/media/nomad.jpg" }),
+        }),
+      );
+      expect(
+        screen.queryByRole("button", { name: "View in 3D" }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it("renders the product name and tagline", () => {
