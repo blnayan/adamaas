@@ -1,8 +1,48 @@
-import { type CollectionConfig } from "payload";
+import { Product } from "@/payload-types";
+import {
+  type CollectionConfig,
+  type CollectionAfterChangeHook,
+  type CollectionAfterDeleteHook,
+  type PayloadRequest,
+} from "payload";
+import { revalidatePath } from "next/cache";
+import { shopPagePaths } from "@/lib/shop/pagination";
 
-// No on-demand revalidation on changes — the shop, home, and product pages
-// refresh through their hourly ISR windows (`export const revalidate`)
-// instead, so content scripts and admin edits never call revalidatePath.
+// Coarse but bulletproof: any catalog change refreshes every shop page,
+// instead of computing which page a product lands on. Bundle edits matter
+// too — the bundle renders in the hero of every shop page. The shop pages
+// must be revalidated by their concrete paths: revalidatePath with the
+// "/shop/[page]" pattern does not purge the prerendered pages (Next 16).
+async function revalidateShopPaths(req: PayloadRequest, doc: Product) {
+  try {
+    revalidatePath("/");
+    revalidatePath(`/product/${doc.slug}`);
+    const { totalDocs } = await req.payload.count({
+      collection: "products",
+      where: { type: { equals: "product" } },
+    });
+    for (const path of shopPagePaths(totalDocs)) revalidatePath(path);
+  } catch {
+    // revalidatePath throws outside a Next request (`payload run` content
+    // scripts) — nothing to purge there, the pages refresh via hourly ISR.
+    req.payload.logger.info("skipped page revalidation (outside Next request)");
+  }
+}
+
+const revalidateAfterChange: CollectionAfterChangeHook<Product> = async ({
+  doc,
+  req,
+}) => {
+  await revalidateShopPaths(req, doc);
+};
+
+const revalidateAfterDelete: CollectionAfterDeleteHook<Product> = async ({
+  doc,
+  req,
+}) => {
+  await revalidateShopPaths(req, doc);
+};
+
 export const Products: CollectionConfig = {
   slug: "products",
   admin: {
@@ -10,6 +50,10 @@ export const Products: CollectionConfig = {
   },
   access: {
     read: () => true,
+  },
+  hooks: {
+    afterChange: [revalidateAfterChange],
+    afterDelete: [revalidateAfterDelete],
   },
   fields: [
     {
