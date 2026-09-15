@@ -27,6 +27,28 @@ export function ProductTabs({ product }: ProductTabsProps) {
     return url ? [{ id: entry.id, label: entry.label, url }] : [];
   });
 
+  // Full airframe STEP is ~8.5 MB — Payload media uploads hang, so Nomad
+  // serves it as a one-click GitHub raw link alongside CMS downloads.
+  const extraDownloads =
+    product.slug === "nomad"
+      ? [
+          {
+            id: "nomad-full-step-github",
+            label: "Full airframe assembly (.step)",
+            url: "https://raw.githubusercontent.com/nickadamaas/adamaas-nomad/main/adamaas-nomad.step",
+          },
+        ]
+      : [];
+  const allDownloads = [
+    ...downloads,
+    ...extraDownloads.filter(
+      (extra) =>
+        !downloads.some((d) =>
+          d.label.toLowerCase().includes("full airframe"),
+        ),
+    ),
+  ];
+
   // Unset or unrecognizable footage URLs hide the tab entirely rather than
   // rendering a broken embed.
   const footageEmbedUrl = product.flightFootageUrl
@@ -137,7 +159,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
         )}
 
         <TabsContent value="downloads" className="mt-8">
-          {downloads.length > 0 ? (
+          {allDownloads.length > 0 ? (
             <Card className="bg-card border-border">
               <CardContent className="p-8 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div>
@@ -148,7 +170,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-4">
-                  {downloads.map(({ id, label, url }) => (
+                  {allDownloads.map(({ id, label, url }) => (
                     <Button
                       key={id}
                       asChild
