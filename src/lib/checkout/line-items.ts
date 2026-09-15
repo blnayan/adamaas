@@ -6,6 +6,8 @@ import { z } from "zod";
 export const checkoutItemSchema = z.object({
   productId: z.number(),
   variantName: z.string().optional(),
+  /** Printed-frame color label when the kit includes a frame. */
+  frameColor: z.string().optional(),
   quantity: z.int().positive().max(99),
 });
 
@@ -44,11 +46,12 @@ export function buildLineItems(
       return { ok: false, unavailable: [item] };
     }
 
+    const detail = [variant?.name, item.frameColor].filter(Boolean).join(" — ");
     lineItems.push({
       price_data: {
         currency: "usd",
         product_data: {
-          name: variant ? `${product.name} (${variant.name})` : product.name,
+          name: detail ? `${product.name} (${detail})` : product.name,
           description: product.tagline,
         },
         unit_amount: Math.round((variant?.price ?? product.basePrice) * 100),
