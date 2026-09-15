@@ -21,6 +21,8 @@ declare module "react" {
         "ar-modes"?: string;
         "camera-controls"?: boolean;
         "auto-rotate"?: boolean;
+        "environment-image"?: string;
+        exposure?: string;
         "shadow-intensity"?: string;
         "touch-action"?: string;
       };
@@ -66,9 +68,15 @@ export function ModelViewer({
       ar-modes={ar ? "webxr scene-viewer quick-look" : undefined}
       camera-controls
       auto-rotate
-      shadow-intensity="1"
+      environment-image="neutral"
+      exposure="0.9"
+      shadow-intensity="0.6"
       touch-action={touchAction}
-      style={{ width: "100%", height: "100%" }}
+      style={{
+        width: "100%",
+        height: "100%",
+        backgroundColor: "#ececec",
+      }}
     />
   );
 }
