@@ -4,15 +4,22 @@ import { z } from "zod";
 export type Variant = NonNullable<Product["variants"]>[number];
 
 export interface CartItem {
-  /** Unique line id (product id + variant name). */
+  /** Unique line id (product id + variant name + optional frame color). */
   id: string;
   product: Product;
   variant?: Variant;
+  /** Printed-frame color label when the kit includes a frame. */
+  frameColor?: string;
   quantity: number;
 }
 
-export function cartItemId(product: Product, variant?: Variant): string {
-  return variant ? `${product.id}-${variant.name}` : String(product.id);
+export function cartItemId(
+  product: Product,
+  variant?: Variant,
+  frameColor?: string,
+): string {
+  const base = variant ? `${product.id}-${variant.name}` : String(product.id);
+  return frameColor ? `${base}__${frameColor}` : base;
 }
 
 export function addItem(
@@ -20,16 +27,20 @@ export function addItem(
   product: Product,
   variant?: Variant,
   quantity = 1,
+  frameColor?: string,
 ): CartItem[] {
   const qty = Math.max(1, Math.floor(quantity));
-  const id = cartItemId(product, variant);
+  const id = cartItemId(product, variant, frameColor);
   const existing = items.find((item) => item.id === id);
   if (existing) {
     return items.map((item) =>
       item.id === id ? { ...item, quantity: item.quantity + qty } : item,
     );
   }
-  return [...items, { id, product, variant, quantity: qty }];
+  return [
+    ...items,
+    { id, product, variant, frameColor, quantity: qty },
+  ];
 }
 
 export function removeItem(items: CartItem[], id: string): CartItem[] {
@@ -89,7 +100,7 @@ export function reconcileCart(
     ) {
       changed = true;
     }
-    next.push({ ...item, product: current, variant });
+    next.push({ ...item, product: current, variant, frameColor: item.frameColor });
   }
 
   return { items: next, changed };
@@ -108,6 +119,7 @@ const storedCartSchema = z.array(
     variant: z
       .looseObject({ name: z.string(), price: z.number() })
       .optional(),
+    frameColor: z.string().optional(),
     quantity: z.int().positive(),
   }),
 );
