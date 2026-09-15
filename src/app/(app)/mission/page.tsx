@@ -10,31 +10,20 @@ export default function MissionPage() {
             Mission
           </h1>
           <p className="text-xl text-muted-foreground">
-            Why we build, how we build, and who we build for.
+            ADAMAAS designs and builds unmanned aircraft systems for defense and
+            commercial customers — NDAA-focused hardware, engineered in-house,
+            shipped without the fluff.
           </p>
-        </div>
-
-        <div className="aspect-video bg-muted rounded-xl overflow-hidden relative">
-          <div className="absolute inset-0 grid place-items-center">
-            <span className="text-muted-foreground">
-              Founder Photo / Workspace Photo Placeholder
-            </span>
-          </div>
         </div>
 
         <div className="prose prose-invert max-w-none">
-          <h2 className="text-4xl font-bold mb-4">Philosophy</h2>
+          <h2 className="text-4xl font-bold mb-4">Nick</h2>
           <p>
-            We believe in open-source hardware. Every frame we design is
-            available for free download because innovation shouldn&apos;t be
-            paywalled. We sell the convenience of pre-built, tuned, and tested
-            systems so you can spend less time soldering and more time flying.
+            Founder and engineer. Obsessed with efficiency, durability, and
+            getting working airframes into the field fast.
           </p>
-          <br />
-          <h2 className="text-4xl font-bold mb-4">The Engineer</h2>
-          <p>
-            Nick - I&apos;m an engineer obsessed with efficiency and
-            durability.
+          <p className="text-xl font-medium not-prose mt-8">
+            Hardware that works. Built in-house. Shipped fast.
           </p>
         </div>
 
