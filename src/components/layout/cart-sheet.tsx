@@ -92,6 +92,7 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                       {item.variant && (
                         <span className="text-xs text-muted-foreground">
                           {item.variant.name}
+                          {item.frameColor ? ` — ${item.frameColor}` : ""}
                         </span>
                       )}
                       <span className="text-sm font-bold text-primary">
