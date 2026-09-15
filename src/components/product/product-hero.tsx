@@ -24,11 +24,38 @@ import {
   resolveImageOrFallback,
 } from "@/lib/media";
 import { getDefaultVariant } from "@/lib/products";
+import {
+  ladderKind,
+  ladderMatrixCell,
+  partitionProductVariants,
+  type LadderKind,
+} from "@/lib/product-variants";
 import { useCart, Variant } from "@/lib/cart-context";
 import { ModelViewer } from "./model-viewer";
 
 interface ProductHeroProps {
   product: Product;
+}
+
+const MATRIX_ROWS: {
+  key: "frame" | "electronics" | "pack" | "o4";
+  label: string;
+}[] = [
+  { key: "frame", label: "Frame" },
+  { key: "electronics", label: "Electronics (incl. GPS)" },
+  { key: "pack", label: "Auline pack" },
+  { key: "o4", label: "O4 Air Unit" },
+];
+
+function selectVariant(
+  variant: Variant,
+  setSelectedVariant: (v: Variant) => void,
+  setSelectedIndex: (n: number) => void,
+  setShowModel: (v: boolean) => void,
+) {
+  setSelectedVariant(variant);
+  setSelectedIndex(0);
+  setShowModel(false);
 }
 
 export function ProductHero({ product }: ProductHeroProps) {
@@ -66,6 +93,10 @@ export function ProductHero({ product }: ProductHeroProps) {
   const badges = (product.badges ?? []).flatMap((badge) =>
     badge.text ? [{ id: badge.id, text: badge.text }] : [],
   );
+  const { ladder, addOns, useLadder } = partitionProductVariants(
+    product.variants,
+  );
+  const showMatrix = ladder.some((v) => ladderKind(v) !== "other");
 
   return (
     <section className="container px-4 md:px-8 max-w-screen-2xl pt-4 md:pt-28 pb-8">
@@ -182,43 +213,208 @@ export function ProductHero({ product }: ProductHeroProps) {
             </p>
           )}
 
-          <div className="pt-4 space-y-4 max-w-sm">
+          <div className="pt-4 space-y-4 max-w-xl">
             <div className="text-3xl font-bold text-primary">
               {formatUsd(selectedVariant?.price ?? product.basePrice)}
             </div>
-            {product.variants && product.variants.length > 0 && (
-              <div className="space-y-2">
-                <Select
-                  value={selectedVariant?.name}
-                  onValueChange={(val) => {
-                    const variant = product.variants?.find(
-                      (v) => v.name === val,
-                    );
-                    if (variant) {
-                      setSelectedVariant(variant);
-                      setSelectedIndex(0);
-                      setShowModel(false);
-                    }
-                  }}
-                >
-                  <SelectTrigger className="w-full bg-input border-input">
-                    <SelectValue placeholder="Select variant" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {product.variants.map((variant) => (
-                      <SelectItem key={variant.id} value={variant.name}>
-                        {variant.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {selectedVariant?.description && (
-                  <p className="text-sm text-muted-foreground">
-                    {selectedVariant.description}
-                  </p>
+
+            {useLadder ? (
+              <div className="space-y-6">
+                {ladder.length > 0 && (
+                  <div className="space-y-3">
+                    <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                      Buy a {product.name}
+                    </h2>
+                    <div
+                      role="radiogroup"
+                      aria-label={`${product.name} kit tiers`}
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-2"
+                    >
+                      {ladder.map((variant) => {
+                        const selected = selectedVariant?.name === variant.name;
+                        return (
+                          <button
+                            key={variant.id ?? variant.name}
+                            type="button"
+                            role="radio"
+                            aria-checked={selected}
+                            onClick={() =>
+                              selectVariant(
+                                variant,
+                                setSelectedVariant,
+                                setSelectedIndex,
+                                setShowModel,
+                              )
+                            }
+                            className={cn(
+                              "rounded-lg border p-3 text-left transition-colors",
+                              selected
+                                ? "border-primary bg-primary/5 ring-1 ring-primary"
+                                : "border-border hover:border-primary/40",
+                            )}
+                          >
+                            <div className="font-semibold text-foreground">
+                              {variant.name}
+                            </div>
+                            <div className="text-sm font-medium text-primary">
+                              {formatUsd(variant.price)}
+                            </div>
+                            {selected && variant.description && (
+                              <p className="mt-1 text-xs text-muted-foreground">
+                                {variant.description}
+                              </p>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {showMatrix && (
+                      <div className="overflow-x-auto rounded-lg border border-border">
+                        <table className="w-full text-xs sm:text-sm">
+                          <caption className="sr-only">
+                            What each kit tier includes
+                          </caption>
+                          <thead>
+                            <tr className="border-b border-border bg-muted/40">
+                              <th scope="col" className="p-2 text-left font-medium">
+                                Includes
+                              </th>
+                              {ladder.map((variant) => (
+                                <th
+                                  key={variant.id ?? variant.name}
+                                  scope="col"
+                                  className="p-2 text-center font-medium"
+                                >
+                                  {shortTierLabel(ladderKind(variant), variant.name)}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {MATRIX_ROWS.map((row) => (
+                              <tr
+                                key={row.key}
+                                className="border-b border-border last:border-0"
+                              >
+                                <th
+                                  scope="row"
+                                  className="p-2 text-left font-normal text-muted-foreground"
+                                >
+                                  {row.label}
+                                </th>
+                                {ladder.map((variant) => (
+                                  <td
+                                    key={`${variant.name}-${row.key}`}
+                                    className="p-2 text-center tabular-nums"
+                                  >
+                                    {ladderMatrixCell(
+                                      ladderKind(variant),
+                                      row.key,
+                                    ) || "—"}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
                 )}
+
+                {addOns.length > 0 && (
+                  <div className="space-y-3">
+                    <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                      Add-ons
+                    </h2>
+                    <div
+                      role="radiogroup"
+                      aria-label={`${product.name} add-ons`}
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-2"
+                    >
+                      {addOns.map((variant) => {
+                        const selected = selectedVariant?.name === variant.name;
+                        return (
+                          <button
+                            key={variant.id ?? variant.name}
+                            type="button"
+                            role="radio"
+                            aria-checked={selected}
+                            onClick={() =>
+                              selectVariant(
+                                variant,
+                                setSelectedVariant,
+                                setSelectedIndex,
+                                setShowModel,
+                              )
+                            }
+                            className={cn(
+                              "rounded-lg border p-3 text-left transition-colors",
+                              selected
+                                ? "border-primary bg-primary/5 ring-1 ring-primary"
+                                : "border-border hover:border-primary/40",
+                            )}
+                          >
+                            <div className="font-semibold text-foreground">
+                              {variant.name}
+                            </div>
+                            <div className="text-sm font-medium text-primary">
+                              {formatUsd(variant.price)}
+                            </div>
+                            {selected && variant.description && (
+                              <p className="mt-1 text-xs text-muted-foreground">
+                                {variant.description}
+                              </p>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
               </div>
+            ) : (
+              product.variants &&
+              product.variants.length > 0 && (
+                <div className="space-y-2">
+                  <Select
+                    value={selectedVariant?.name}
+                    onValueChange={(val) => {
+                      const variant = product.variants?.find(
+                        (v) => v.name === val,
+                      );
+                      if (variant) {
+                        selectVariant(
+                          variant,
+                          setSelectedVariant,
+                          setSelectedIndex,
+                          setShowModel,
+                        );
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-full bg-input border-input">
+                      <SelectValue placeholder="Select variant" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {product.variants.map((variant) => (
+                        <SelectItem key={variant.id} value={variant.name}>
+                          {variant.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {selectedVariant?.description && (
+                    <p className="text-sm text-muted-foreground">
+                      {selectedVariant.description}
+                    </p>
+                  )}
+                </div>
+              )
             )}
+
             <Button
               size="lg"
               className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold"
@@ -231,4 +427,19 @@ export function ProductHero({ product }: ProductHeroProps) {
       </div>
     </section>
   );
+}
+
+function shortTierLabel(kind: LadderKind, fallback: string): string {
+  switch (kind) {
+    case "frame":
+      return "Frame";
+    case "electronics":
+      return "Electronics";
+    case "full":
+      return "Full";
+    case "ultimate":
+      return "Ultimate";
+    default:
+      return fallback;
+  }
 }
