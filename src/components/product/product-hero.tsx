@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ImageIcon, Rotate3d } from "lucide-react";
+import { ImageIcon, Minus, Plus, Rotate3d } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatUsd } from "@/lib/format";
 import { useMediaQuery } from "@/lib/use-media-query";
@@ -25,6 +25,7 @@ import {
 } from "@/lib/media";
 import { getDefaultVariant } from "@/lib/products";
 import {
+  isAddOnVariant,
   ladderKind,
   ladderMatrixCell,
   partitionProductVariants,
@@ -47,13 +48,21 @@ const MATRIX_ROWS: {
   { key: "o4", label: "O4 Air Unit" },
 ];
 
-function selectVariant(
+function pickInitialKit(product: Product): Variant | undefined {
+  const { ladder, useLadder } = partitionProductVariants(product.variants);
+  const fallback = getDefaultVariant(product);
+  if (!useLadder) return fallback;
+  if (fallback && !isAddOnVariant(fallback)) return fallback;
+  return ladder.find((v) => v.isDefault) ?? ladder[0] ?? fallback;
+}
+
+function selectKit(
   variant: Variant,
-  setSelectedVariant: (v: Variant) => void,
+  setSelectedKit: (v: Variant) => void,
   setSelectedIndex: (n: number) => void,
   setShowModel: (v: boolean) => void,
 ) {
-  setSelectedVariant(variant);
+  setSelectedKit(variant);
   setSelectedIndex(0);
   setShowModel(false);
 }
@@ -61,8 +70,10 @@ function selectVariant(
 export function ProductHero({ product }: ProductHeroProps) {
   const { addItem } = useCart();
   const [selectedVariant, setSelectedVariant] = useState<Variant | undefined>(
-    getDefaultVariant(product),
+    () => pickInitialKit(product),
   );
+  const [selectedAddOns, setSelectedAddOns] = useState<Variant[]>([]);
+  const [quantity, setQuantity] = useState(1);
   const variantImages = (selectedVariant?.images ?? []).flatMap((entry) => {
     const image = resolveImage(entry.image, product.name);
     return image ? [image] : [];
@@ -97,6 +108,29 @@ export function ProductHero({ product }: ProductHeroProps) {
     product.variants,
   );
   const showMatrix = ladder.some((v) => ladderKind(v) !== "other");
+  const unitTotal =
+    (selectedVariant?.price ?? product.basePrice) +
+    selectedAddOns.reduce((sum, v) => sum + v.price, 0);
+  const lineTotal = unitTotal * quantity;
+
+  function toggleAddOn(variant: Variant) {
+    setSelectedAddOns((current) => {
+      const exists = current.some((v) => v.name === variant.name);
+      if (exists) return current.filter((v) => v.name !== variant.name);
+      return [...current, variant];
+    });
+  }
+
+  function addSelectionToCart() {
+    if (selectedVariant) {
+      addItem(product, selectedVariant, quantity);
+    } else if (selectedAddOns.length === 0) {
+      addItem(product, undefined, quantity);
+    }
+    for (const addOn of selectedAddOns) {
+      addItem(product, addOn, quantity);
+    }
+  }
 
   return (
     <section className="container px-4 md:px-8 max-w-screen-2xl pt-4 md:pt-28 pb-8">
@@ -215,8 +249,13 @@ export function ProductHero({ product }: ProductHeroProps) {
 
           <div className="pt-4 space-y-4 max-w-xl">
             <div className="text-3xl font-bold text-primary">
-              {formatUsd(selectedVariant?.price ?? product.basePrice)}
+              {formatUsd(lineTotal)}
             </div>
+            {quantity > 1 && (
+              <p className="text-sm text-muted-foreground">
+                {formatUsd(unitTotal)} each × {quantity}
+              </p>
+            )}
 
             {useLadder ? (
               <div className="space-y-6">
@@ -239,7 +278,7 @@ export function ProductHero({ product }: ProductHeroProps) {
                             role="radio"
                             aria-checked={selected}
                             onClick={() =>
-                              selectVariant(
+                              selectKit(
                                 variant,
                                 setSelectedVariant,
                                 setSelectedIndex,
@@ -328,27 +367,22 @@ export function ProductHero({ product }: ProductHeroProps) {
                     <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                       Add-ons
                     </h2>
+                    <p className="text-xs text-muted-foreground">
+                      Optional — stack with your kit.
+                    </p>
                     <div
-                      role="radiogroup"
-                      aria-label={`${product.name} add-ons`}
                       className="grid grid-cols-1 sm:grid-cols-2 gap-2"
                     >
                       {addOns.map((variant) => {
-                        const selected = selectedVariant?.name === variant.name;
+                        const selected = selectedAddOns.some(
+                          (v) => v.name === variant.name,
+                        );
                         return (
                           <button
                             key={variant.id ?? variant.name}
                             type="button"
-                            role="radio"
-                            aria-checked={selected}
-                            onClick={() =>
-                              selectVariant(
-                                variant,
-                                setSelectedVariant,
-                                setSelectedIndex,
-                                setShowModel,
-                              )
-                            }
+                            aria-pressed={selected}
+                            onClick={() => toggleAddOn(variant)}
                             className={cn(
                               "rounded-lg border p-3 text-left transition-colors",
                               selected
@@ -386,7 +420,7 @@ export function ProductHero({ product }: ProductHeroProps) {
                         (v) => v.name === val,
                       );
                       if (variant) {
-                        selectVariant(
+                        selectKit(
                           variant,
                           setSelectedVariant,
                           setSelectedIndex,
@@ -415,10 +449,52 @@ export function ProductHero({ product }: ProductHeroProps) {
               )
             )}
 
+            <div className="space-y-2">
+              <label
+                htmlFor="product-qty"
+                className="text-sm font-semibold uppercase tracking-wide text-muted-foreground"
+              >
+                Quantity
+              </label>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label="Decrease quantity"
+                  disabled={quantity <= 1}
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                >
+                  <Minus className="size-4" aria-hidden />
+                </Button>
+                <input
+                  id="product-qty"
+                  type="number"
+                  min={1}
+                  inputMode="numeric"
+                  className="w-16 rounded-md border border-input bg-input px-2 py-2 text-center font-semibold tabular-nums"
+                  value={quantity}
+                  onChange={(e) => {
+                    const next = Number.parseInt(e.target.value, 10);
+                    setQuantity(Number.isFinite(next) && next > 0 ? next : 1);
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label="Increase quantity"
+                  onClick={() => setQuantity((q) => q + 1)}
+                >
+                  <Plus className="size-4" aria-hidden />
+                </Button>
+              </div>
+            </div>
+
             <Button
               size="lg"
               className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold"
-              onClick={() => addItem(product, selectedVariant)}
+              onClick={addSelectionToCart}
             >
               Add to Cart
             </Button>

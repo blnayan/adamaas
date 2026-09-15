@@ -167,3 +167,21 @@ describe("parseStoredCart", () => {
     ).toEqual([]);
   });
 });
+
+describe("addItem quantity", () => {
+  it("adds the requested quantity for a new line", () => {
+    const product = makeProduct({ variants: [{ name: "Full Kit", price: 299 }] });
+    const variant = product.variants![0];
+    const next = addItem([], product, variant, 3);
+    expect(next).toHaveLength(1);
+    expect(next[0].quantity).toBe(3);
+  });
+
+  it("increments an existing line by the requested quantity", () => {
+    const product = makeProduct({ variants: [{ name: "Full Kit", price: 299 }] });
+    const variant = product.variants![0];
+    const once = addItem([], product, variant, 2);
+    const twice = addItem(once, product, variant, 3);
+    expect(twice[0].quantity).toBe(5);
+  });
+});
