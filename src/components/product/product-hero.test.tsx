@@ -99,8 +99,7 @@ describe("ProductHero", () => {
     await user.click(screen.getByRole("button", { name: "Frame side" }));
     expect(screen.getAllByAltText("Frame side")).toHaveLength(2);
 
-    await user.click(screen.getByRole("combobox"));
-    await user.click(screen.getByRole("option", { name: "Full Kit" }));
+    await user.click(screen.getByRole("radio", { name: /Full Kit/i }));
 
     // New variant's first image is the main image again (index reset):
     // without the reset, index 1 would make "Kit side" the main image.
@@ -262,8 +261,7 @@ describe("ProductHero", () => {
       await user.click(screen.getByRole("button", { name: "View in 3D" }));
       expect(container.querySelector("model-viewer")).toBeInTheDocument();
 
-      await user.click(screen.getByRole("combobox"));
-      await user.click(screen.getByRole("option", { name: "Full Kit" }));
+      await user.click(screen.getByRole("radio", { name: /Full Kit/i }));
 
       expect(container.querySelector("model-viewer")).not.toBeInTheDocument();
       expect(screen.getByAltText("Kit front")).toBeInTheDocument();
@@ -482,8 +480,7 @@ describe("ProductHero", () => {
       expect(screen.getByText("Printed frame parts only.")).toBeInTheDocument();
 
       // Full Kit has no description — the line disappears.
-      await user.click(screen.getByRole("combobox"));
-      await user.click(screen.getByRole("option", { name: "Full Kit" }));
+      await user.click(screen.getByRole("radio", { name: /Full Kit/i }));
       expect(
         screen.queryByText("Printed frame parts only."),
       ).not.toBeInTheDocument();
@@ -500,8 +497,7 @@ describe("ProductHero", () => {
         }),
       );
 
-      await user.click(screen.getByRole("combobox"));
-      await user.click(screen.getByRole("option", { name: "Full Kit" }));
+      await user.click(screen.getByRole("radio", { name: /Full Kit/i }));
 
       expect(screen.getByText("$269.00")).toBeInTheDocument();
       await user.click(screen.getByRole("button", { name: "Add to Cart" }));
