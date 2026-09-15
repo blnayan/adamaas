@@ -19,15 +19,17 @@ export function addItem(
   items: CartItem[],
   product: Product,
   variant?: Variant,
+  quantity = 1,
 ): CartItem[] {
+  const qty = Math.max(1, Math.floor(quantity));
   const id = cartItemId(product, variant);
   const existing = items.find((item) => item.id === id);
   if (existing) {
     return items.map((item) =>
-      item.id === id ? { ...item, quantity: item.quantity + 1 } : item,
+      item.id === id ? { ...item, quantity: item.quantity + qty } : item,
     );
   }
-  return [...items, { id, product, variant, quantity: 1 }];
+  return [...items, { id, product, variant, quantity: qty }];
 }
 
 export function removeItem(items: CartItem[], id: string): CartItem[] {
