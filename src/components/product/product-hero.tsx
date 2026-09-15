@@ -76,7 +76,7 @@ export function ProductHero({ product }: ProductHeroProps) {
               layout. */}
           <AspectRatio
             ratio={4 / 3}
-            className="rounded-lg overflow-hidden bg-muted"
+            className="rounded-lg overflow-hidden bg-[#ececec]"
           >
             {showModel && modelViewerProps ? (
               // AR stays off inline even when re-enabled elsewhere: the
