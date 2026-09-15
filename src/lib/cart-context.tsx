@@ -31,7 +31,7 @@ export type { CartItem, Variant };
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (product: Product, variant?: Variant, quantity?: number) => void;
+  addItem: (product: Product, variant?: Variant, quantity?: number, frameColor?: string) => void;
   removeItem: (itemId: string) => void;
   clearCart: () => void;
   itemCount: number;
@@ -61,8 +61,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const addItem = useCallback(
-    (product: Product, variant?: Variant, quantity = 1) => {
-      addToCart(product, variant, quantity);
+    (
+      product: Product,
+      variant?: Variant,
+      quantity = 1,
+      frameColor?: string,
+    ) => {
+      addToCart(product, variant, quantity, frameColor);
       toast.success(`Added ${product.name} to cart`, {
         action: {
           label: "View cart",

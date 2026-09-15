@@ -55,8 +55,9 @@ export function addToCart(
   product: Product,
   variant?: Variant,
   quantity = 1,
+  frameColor?: string,
 ) {
-  write(addItem(read(), product, variant, quantity));
+  write(addItem(read(), product, variant, quantity, frameColor));
 }
 
 export function removeFromCart(id: string) {

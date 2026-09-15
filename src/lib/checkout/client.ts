@@ -11,6 +11,7 @@ function toCheckoutItems(items: CartItem[]): CheckoutItem[] {
   return items.map((item) => ({
     productId: item.product.id,
     variantName: item.variant?.name,
+    frameColor: item.frameColor,
     quantity: item.quantity,
   }));
 }

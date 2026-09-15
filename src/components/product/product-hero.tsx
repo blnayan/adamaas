@@ -31,6 +31,11 @@ import {
   partitionProductVariants,
   type LadderKind,
 } from "@/lib/product-variants";
+import {
+  DEFAULT_FRAME_COLOR,
+  FRAME_COLORS,
+  kitNeedsFrameColor,
+} from "@/lib/frame-colors";
 import { useCart, Variant } from "@/lib/cart-context";
 import { ModelViewer } from "./model-viewer";
 
@@ -74,6 +79,9 @@ export function ProductHero({ product }: ProductHeroProps) {
   );
   const [selectedAddOns, setSelectedAddOns] = useState<Variant[]>([]);
   const [quantity, setQuantity] = useState(1);
+  const [selectedFrameColor, setSelectedFrameColor] = useState(
+    DEFAULT_FRAME_COLOR.label,
+  );
   const variantImages = (selectedVariant?.images ?? []).flatMap((entry) => {
     const image = resolveImage(entry.image, product.name);
     return image ? [image] : [];
@@ -122,8 +130,11 @@ export function ProductHero({ product }: ProductHeroProps) {
   }
 
   function addSelectionToCart() {
+    const color = kitNeedsFrameColor(selectedVariant)
+      ? selectedFrameColor
+      : undefined;
     if (selectedVariant) {
-      addItem(product, selectedVariant, quantity);
+      addItem(product, selectedVariant, quantity, color);
     } else if (selectedAddOns.length === 0) {
       addItem(product, undefined, quantity);
     }
@@ -447,6 +458,46 @@ export function ProductHero({ product }: ProductHeroProps) {
                   )}
                 </div>
               )
+            )}
+
+
+            {kitNeedsFrameColor(selectedVariant) && (
+              <div className="space-y-2">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                  Frame color
+                </h2>
+                <div
+                  role="radiogroup"
+                  aria-label="Frame color"
+                  className="grid grid-cols-2 gap-2"
+                >
+                  {FRAME_COLORS.map((color) => {
+                    const selected = selectedFrameColor === color.label;
+                    return (
+                      <button
+                        key={color.id}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        onClick={() => setSelectedFrameColor(color.label)}
+                        className={cn(
+                          "flex items-center gap-2 rounded-lg border p-2.5 text-left transition-colors",
+                          selected
+                            ? "border-primary bg-primary/5 ring-1 ring-primary"
+                            : "border-border hover:border-primary/40",
+                        )}
+                      >
+                        <span
+                          aria-hidden
+                          className="size-6 shrink-0 rounded-full border border-border"
+                          style={{ backgroundColor: color.swatch }}
+                        />
+                        <span className="text-sm font-medium">{color.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             )}
 
             <div className="space-y-2">
