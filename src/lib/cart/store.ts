@@ -51,8 +51,12 @@ export function getServerCartSnapshot(): CartItem[] {
   return EMPTY;
 }
 
-export function addToCart(product: Product, variant?: Variant) {
-  write(addItem(read(), product, variant));
+export function addToCart(
+  product: Product,
+  variant?: Variant,
+  quantity = 1,
+) {
+  write(addItem(read(), product, variant, quantity));
 }
 
 export function removeFromCart(id: string) {
