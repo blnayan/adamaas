@@ -31,7 +31,7 @@ export type { CartItem, Variant };
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (product: Product, variant?: Variant) => void;
+  addItem: (product: Product, variant?: Variant, quantity?: number) => void;
   removeItem: (itemId: string) => void;
   clearCart: () => void;
   itemCount: number;
@@ -60,15 +60,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const addItem = useCallback((product: Product, variant?: Variant) => {
-    addToCart(product, variant);
-    toast.success(`Added ${product.name} to cart`, {
-      action: {
-        label: "View cart",
-        onClick: () => setIsOpen(true),
-      },
-    });
-  }, []);
+  const addItem = useCallback(
+    (product: Product, variant?: Variant, quantity = 1) => {
+      addToCart(product, variant, quantity);
+      toast.success(`Added ${product.name} to cart`, {
+        action: {
+          label: "View cart",
+          onClick: () => setIsOpen(true),
+        },
+      });
+    },
+    [],
+  );
 
   const value = useMemo(
     () => ({
