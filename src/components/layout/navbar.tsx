@@ -34,7 +34,7 @@ export function Navbar() {
             </div>
 
             <span className="text-xl font-bold tracking-tighter sm:inline-block">
-              ADAMAAS
+              Adamaas
             </span>
           </Link>
           <nav className="hidden md:flex gap-6">

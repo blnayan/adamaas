@@ -36,7 +36,7 @@ export default async function BlogIndexPage() {
             Our <span className="text-primary">Blog</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Insights, updates, and deep dives from the ADAMAAS team.
+            Insights, updates, and deep dives from the Adamaas team.
           </p>
         </div>
 
