@@ -10,7 +10,7 @@ export default function MissionPage() {
             Mission
           </h1>
           <p className="text-xl text-muted-foreground">
-            ADAMAAS designs and builds unmanned aircraft systems for defense and
+            Adamaas designs and builds unmanned aircraft systems for defense and
             commercial customers — NDAA-focused hardware, engineered in-house,
             shipped without the fluff.
           </p>
